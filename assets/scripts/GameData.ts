@@ -8,7 +8,8 @@ export default class GameData {
     public static itemCount: number = 0;
 
     // 目前進行到第幾關（1~3）
-    public static currentLevel: number = 1;
+    // TODO : 我先改2做連接的測試，之後要改回1
+    public static currentLevel: number = 2;
 
     // 是否獨自探險（Slide 4 選擇）
     public static isSolo: boolean = true;
