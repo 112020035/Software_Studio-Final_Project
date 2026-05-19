@@ -14,6 +14,7 @@
  * - J：攻擊動畫。
  * - T：投擲動畫。
  * - S / 下方向鍵：推動動畫。
+ * - 玩家按住 S 並從左右側碰到 PushBlockController 方塊時，可用 A / D 推動。
  * - C：攀爬動畫。
  * - H：受傷動畫。
  * - K：死亡動畫。
@@ -84,7 +85,19 @@ cc.Class({
         useHorizontalBounds: true,
         minX: 0,
         maxX: 99999,
-        collisionSkin: 0.5
+        collisionSkin: 0.5,
+        pullGrabDistance: 16,
+        respawnYOffset: 80,
+        climbSpeed: 130,
+        ladderHorizontalTolerance: 18,
+        ropeHorizontalTolerance: 40,
+        snowAcceleration: 430,
+        snowFriction: 45,
+        snowTurnBrake: 180,
+        rampAcceleration: 360,
+        rampFriction: 18,
+        rampGravityAcceleration: 260,
+        rampMaxSlideSpeed: 260
     },
 
     // 初始化動畫器、角色狀態、碰撞系統與鍵盤事件。
@@ -104,7 +117,9 @@ cc.Class({
         this.currentAction = '';
         this.moveDirection = 0;
         this.velocityY = 0;
-        this.groundY = this.node.y;
+        this.spawnX = this.node.x;
+        this.spawnY = this.node.y;
+        this.groundY = this.spawnY;
         this.isGrounded = false;
         this.isActionLocked = false;
         this.isDead = false;
@@ -115,10 +130,21 @@ cc.Class({
         this.throwPressed = false;
         this.pushPressed = false;
         this.climbPressed = false;
+        this.upPressed = false;
         this.hurtPressed = false;
         this.jumpPressed = false;
         this.jumpCount = 0;
         this.groundContactTimer = 0;
+        this.pushBlockTimer = 0;
+        this.activePushBlock = null;
+        this.activePushBlockSide = 0;
+        this.activePushBlockContactTimer = 0;
+        this.currentMovingPlatform = null;
+        this.currentClimbType = '';
+        this.currentGroundNode = null;
+        this.currentRamp = null;
+        this.horizontalVelocity = 0;
+        this.isOnSnowGround = false;
 
         var collisionManager = cc.director.getCollisionManager();
         collisionManager.enabled = true;
@@ -205,33 +231,84 @@ cc.Class({
             }
         }
 
+        if (this.pushBlockTimer > 0) {
+            this.pushBlockTimer -= dt;
+        }
+
+        if (this.activePushBlockContactTimer > 0) {
+            this.activePushBlockContactTimer -= dt;
+        }
+
+        if (!this.pushPressed || this.activePushBlockContactTimer <= 0) {
+            this.activePushBlock = null;
+            this.activePushBlockSide = 0;
+        }
+
         this.updateMoveDirection();
         this.updateGroundContact(dt);
+        this.applyMovingPlatformDelta();
+        this.applyClimbablePlatformDelta();
+        this.refreshPullBlockCandidate();
+        this.refreshLadderContact();
+        this.updateSnowGroundState();
 
         this.previousX = this.node.x;
         this.previousY = this.node.y;
 
-        if (this.moveDirection !== 0) {
-            this.node.x += this.moveDirection * this.moveSpeed * dt;
-            this.node.scaleX = Math.abs(this.node.scaleX) * this.moveDirection;
+        if (this.isClimbingLadder()) {
+            this.node.y += this.climbSpeed * dt;
+            this.velocityY = 0;
+            this.isGrounded = false;
+            this.groundContactTimer = 0;
+            this.jumpCount = 0;
+            this.horizontalVelocity = 0;
+        } else {
+            this.applyHorizontalMovement(dt);
         }
 
         this.applyHorizontalBounds();
+        this.tryPullActivePushBlock();
 
         if (!this.isGrounded || this.velocityY !== 0) {
             this.velocityY -= this.gravity * dt;
             this.node.y += this.velocityY * dt;
 
             if (this.node.y <= this.fallLimitY) {
-                this.node.y = this.fallLimitY;
-                this.velocityY = 0;
-                this.isGrounded = true;
-                this.jumpCount = 0;
-                this.groundContactTimer = this.groundContactGrace;
+                this.respawnAfterFall();
             }
         }
 
         this.updateMovementAnimation();
+    },
+
+    respawnAfterFall: function () {
+        this.node.x = this.spawnX;
+        this.node.y = this.spawnY + this.respawnYOffset;
+        this.previousX = this.node.x;
+        this.previousY = this.node.y;
+        this.velocityY = 0;
+        this.isGrounded = false;
+        this.groundContactTimer = 0;
+        this.jumpCount = 0;
+        this.isActionLocked = false;
+        this.actionTimer = 0;
+        this.activePushBlock = null;
+        this.activePushBlockSide = 0;
+        this.activePushBlockContactTimer = 0;
+        this.pushBlockTimer = 0;
+        this.currentLadder = null;
+        this.currentMovingPlatform = null;
+        this.currentClimbType = '';
+        this.currentGroundNode = null;
+        this.currentRamp = null;
+        this.horizontalVelocity = 0;
+        this.isOnSnowGround = false;
+    },
+
+    setCheckpoint: function (x, y) {
+        this.spawnX = x;
+        this.spawnY = y - this.respawnYOffset;
+        this.groundY = y;
     },
 
     // 剛進入碰撞時修正角色位置。
@@ -247,6 +324,14 @@ cc.Class({
     // 根據碰撞前後位置判斷角色撞到地板、天花板或牆面。
     resolveSolidCollision: function (other, self) {
         if (this.isDead || !other.world || !self.world) {
+            return;
+        }
+
+        if (other.node.getComponent('CheckpointController')) {
+            return;
+        }
+
+        if (this.isNonSolidClimbNode(other.node)) {
             return;
         }
 
@@ -273,10 +358,19 @@ cc.Class({
         var groundOverlap = 0.1;
         var tolerance = 3;
 
+        var ramp = other.node.getComponent('RampController');
+        if (ramp) {
+            this.resolveRampCollision(ramp, selfAabb, previousBottom, tolerance);
+            return;
+        }
+
         if (this.velocityY <= 0 && previousBottom >= otherAabb.yMax - tolerance) {
             this.node.y += Math.max(0, overlapTop - groundOverlap);
             this.velocityY = 0;
             this.isGrounded = true;
+            this.currentMovingPlatform = this.getMovingPlatformController(other.node);
+            this.currentGroundNode = other.node;
+            this.currentRamp = null;
             this.jumpCount = 0;
             this.groundContactTimer = this.groundContactGrace;
             return;
@@ -288,11 +382,315 @@ cc.Class({
             return;
         }
 
-        if (this.moveDirection < 0 && previousLeft >= otherAabb.xMax - tolerance) {
-            this.node.x += overlapRight + skin;
-        } else if (this.moveDirection > 0 && previousRight <= otherAabb.xMin + tolerance) {
-            this.node.x -= overlapLeft + skin;
+        var pushBlock = other.node.getComponent('PushBlockController');
+        if (pushBlock && this.tryPushBlock(pushBlock, previousLeft, previousRight, otherAabb, overlapLeft, overlapRight, tolerance, skin)) {
+            return;
         }
+
+        var horizontalDirection = this.getHorizontalCollisionDirection();
+
+        if (horizontalDirection < 0 && previousLeft >= otherAabb.xMax - tolerance) {
+            this.node.x += overlapRight + skin;
+            this.horizontalVelocity = 0;
+        } else if (horizontalDirection > 0 && previousRight <= otherAabb.xMin + tolerance) {
+            this.node.x -= overlapLeft + skin;
+            this.horizontalVelocity = 0;
+        }
+    },
+
+    // 玩家從左右側碰到可推方塊時，將本幀水平移動量轉給方塊。
+    // 按住 S 時，把玩家本幀的側向位移轉給可推方塊。
+    tryPushBlock: function (pushBlock, previousLeft, previousRight, otherAabb, overlapLeft, overlapRight, tolerance, skin) {
+        var deltaX = this.node.x - this.previousX;
+        var pushDistance = Math.abs(deltaX);
+        var playerSide = 0;
+
+        if (previousRight <= otherAabb.xMin + tolerance) {
+            playerSide = -1;
+        } else if (previousLeft >= otherAabb.xMax - tolerance) {
+            playerSide = 1;
+        }
+
+        if (playerSide !== 0) {
+            this.activePushBlock = pushBlock;
+            this.activePushBlockSide = playerSide;
+            this.activePushBlockContactTimer = 0.16;
+        }
+
+        if (!this.pushPressed || pushDistance <= 0 || this.moveDirection === 0) {
+            return false;
+        }
+
+        if (this.moveDirection < 0 && playerSide === 1) {
+            if (pushBlock.tryPush(-1, pushDistance)) {
+                this.node.x += overlapRight + skin;
+                this.pushBlockTimer = 0.12;
+                return true;
+            }
+        } else if (this.moveDirection > 0 && playerSide === -1) {
+            if (pushBlock.tryPush(1, pushDistance)) {
+                this.node.x -= overlapLeft + skin;
+                this.pushBlockTimer = 0.12;
+                return true;
+            }
+        }
+
+        return false;
+    },
+
+    // 使用 RampController 計算斜面高度，避免把斜坡當成普通矩形碰撞。
+    resolveRampCollision: function (ramp, selfAabb, previousBottom, tolerance) {
+        var footX = (selfAabb.xMin + selfAabb.xMax) * 0.5;
+
+        if (!ramp.containsWorldX(footX)) {
+            return false;
+        }
+
+        var surfaceY = ramp.getSurfaceY(footX);
+        var bottom = selfAabb.yMin;
+        var distanceToSurface = bottom - surfaceY;
+        var snapUp = ramp.snapUpDistance || 0;
+        var snapDown = ramp.snapDownDistance || 0;
+        var canSnapUp = distanceToSurface <= snapUp;
+        var canSnapDown = distanceToSurface >= -snapDown;
+        var cameFromAbove = previousBottom >= surfaceY - tolerance;
+
+        if (this.velocityY > 0 || !canSnapUp || !canSnapDown || !cameFromAbove) {
+            return false;
+        }
+
+        this.node.y -= distanceToSurface;
+        this.velocityY = 0;
+        this.isGrounded = true;
+        this.currentMovingPlatform = this.getMovingPlatformController(ramp.node);
+        this.currentGroundNode = ramp.node;
+        this.currentRamp = ramp;
+        this.jumpCount = 0;
+        this.groundContactTimer = this.groundContactGrace;
+        return true;
+    },
+
+    // 依照普通地面、雪地或斜坡選擇不同的水平移動手感。
+    applyHorizontalMovement: function (dt) {
+        if (this.currentRamp && this.isGrounded) {
+            this.applyRampHorizontalMovement(dt);
+            return;
+        }
+
+        if (this.isOnSnowGround) {
+            this.applySnowHorizontalMovement(dt);
+            return;
+        }
+
+        this.horizontalVelocity = this.moveDirection * this.moveSpeed;
+
+        if (this.moveDirection !== 0) {
+            this.node.x += this.horizontalVelocity * dt;
+            this.node.scaleX = Math.abs(this.node.scaleX) * this.getFacingDirection();
+        }
+    },
+
+    // 雪地會保留水平慣性，放開方向鍵後仍會滑行。
+    applySnowHorizontalMovement: function (dt) {
+        if (this.moveDirection !== 0) {
+            var targetVelocity = this.moveDirection * this.moveSpeed;
+            var acceleration = this.snowAcceleration;
+
+            if (this.horizontalVelocity !== 0 &&
+                this.getSign(this.horizontalVelocity) !== this.moveDirection) {
+                acceleration += this.snowTurnBrake;
+            }
+
+            this.horizontalVelocity = this.moveToward(
+                this.horizontalVelocity,
+                targetVelocity,
+                acceleration * dt
+            );
+            this.node.scaleX = Math.abs(this.node.scaleX) * this.getFacingDirection();
+        } else {
+            this.horizontalVelocity = this.moveToward(
+                this.horizontalVelocity,
+                0,
+                this.snowFriction * dt
+            );
+        }
+
+        if (Math.abs(this.horizontalVelocity) > 0.01) {
+            this.node.x += this.horizontalVelocity * dt;
+        }
+    },
+
+    // 斜坡會套用更滑的摩擦，並每幀增加下坡方向的加速度。
+    applyRampHorizontalMovement: function (dt) {
+        var downhillDirection = this.currentRamp.getDownhillDirection ?
+            this.currentRamp.getDownhillDirection() :
+            0;
+
+        if (this.moveDirection !== 0) {
+            var targetVelocity = this.moveDirection * this.moveSpeed;
+            this.horizontalVelocity = this.moveToward(
+                this.horizontalVelocity,
+                targetVelocity,
+                this.rampAcceleration * dt
+            );
+            this.node.scaleX = Math.abs(this.node.scaleX) * this.getFacingDirection();
+        } else {
+            this.horizontalVelocity = this.moveToward(
+                this.horizontalVelocity,
+                0,
+                this.rampFriction * dt
+            );
+        }
+
+        this.horizontalVelocity += downhillDirection * this.rampGravityAcceleration * dt;
+        this.horizontalVelocity = cc.misc.clampf(
+            this.horizontalVelocity,
+            -this.rampMaxSlideSpeed,
+            this.rampMaxSlideSpeed
+        );
+
+        if (Math.abs(this.horizontalVelocity) > 0.01) {
+            this.node.x += this.horizontalVelocity * dt;
+        }
+    },
+
+    // 將數值往目標靠近，並避免超過目標值。
+    moveToward: function (current, target, amount) {
+        if (current < target) {
+            return Math.min(current + amount, target);
+        }
+
+        if (current > target) {
+            return Math.max(current - amount, target);
+        }
+
+        return target;
+    },
+
+    getSign: function (value) {
+        if (value > 0) {
+            return 1;
+        }
+
+        if (value < 0) {
+            return -1;
+        }
+
+        return 0;
+    },
+
+    // 優先使用本幀實際位移方向，讓滑行撞牆時能正確修正。
+    getHorizontalCollisionDirection: function () {
+        var deltaX = this.node.x - this.previousX;
+
+        if (Math.abs(deltaX) > 0.001) {
+            return this.getSign(deltaX);
+        }
+
+        return this.moveDirection;
+    },
+
+    isPullingActivePushBlock: function () {
+        if (!this.pushPressed || !this.activePushBlock || this.activePushBlockSide === 0 || this.moveDirection === 0) {
+            return false;
+        }
+
+        return (this.activePushBlockSide === -1 && this.moveDirection < 0) ||
+            (this.activePushBlockSide === 1 && this.moveDirection > 0);
+    },
+
+    getFacingDirection: function () {
+        if (this.isPullingActivePushBlock()) {
+            return -this.activePushBlockSide;
+        }
+
+        return this.moveDirection;
+    },
+
+    // 按住 S 時，尋找可從旁邊拉動的方塊。
+    refreshPullBlockCandidate: function () {
+        if (!this.pushPressed || this.moveDirection === 0) {
+            return;
+        }
+
+        var candidate = this.findPullBlockCandidate();
+
+        if (!candidate) {
+            return;
+        }
+
+        this.activePushBlock = candidate.block;
+        this.activePushBlockSide = candidate.side;
+        this.activePushBlockContactTimer = 0.16;
+    },
+
+    // 找出玩家移動方向反側最近的可拉方塊。
+    findPullBlockCandidate: function () {
+        var selfCollider = this.getComponent(cc.BoxCollider);
+        var scene = cc.director.getScene();
+
+        if (!selfCollider || !selfCollider.world || !scene || !scene.getComponentsInChildren) {
+            return null;
+        }
+
+        var selfAabb = selfCollider.world.aabb;
+        var blocks = scene.getComponentsInChildren('PushBlockController');
+        var best = null;
+        var bestGap = this.pullGrabDistance;
+
+        for (var i = 0; i < blocks.length; i++) {
+            var block = blocks[i];
+            var blockCollider = block.node.getComponent(cc.BoxCollider);
+
+            if (!blockCollider || !blockCollider.world) {
+                continue;
+            }
+
+            var blockAabb = blockCollider.world.aabb;
+            var verticalOverlap = selfAabb.yMax > blockAabb.yMin && selfAabb.yMin < blockAabb.yMax;
+
+            if (!verticalOverlap) {
+                continue;
+            }
+
+            var gap = 0;
+            var side = 0;
+
+            if (this.moveDirection < 0 && selfAabb.xMax <= blockAabb.xMin + this.pullGrabDistance) {
+                gap = Math.max(0, blockAabb.xMin - selfAabb.xMax);
+                side = -1;
+            } else if (this.moveDirection > 0 && selfAabb.xMin >= blockAabb.xMax - this.pullGrabDistance) {
+                gap = Math.max(0, selfAabb.xMin - blockAabb.xMax);
+                side = 1;
+            }
+
+            if (side !== 0 && gap <= bestGap) {
+                best = {
+                    block: block,
+                    side: side
+                };
+                bestGap = gap;
+            }
+        }
+
+        return best;
+    },
+
+    // While holding S, moving away from the touched side pulls the same block along.
+    tryPullActivePushBlock: function () {
+        var pullDistance = Math.abs(this.node.x - this.previousX);
+
+        if (pullDistance <= 0 || !this.isPullingActivePushBlock()) {
+            return false;
+        }
+
+        if (this.activePushBlock.tryPush(this.moveDirection, pullDistance)) {
+            this.activePushBlockContactTimer = 0.16;
+            this.pushBlockTimer = 0.12;
+            return true;
+        }
+
+        return false;
     },
 
     // 根據左右按鍵狀態決定水平移動方向。
@@ -316,7 +714,87 @@ cc.Class({
 
         if (this.groundContactTimer <= 0) {
             this.isGrounded = false;
+            this.currentMovingPlatform = null;
+            this.currentGroundNode = null;
+            this.currentRamp = null;
+            this.isOnSnowGround = false;
         }
+    },
+
+    // 只有站在名稱或 SpriteFrame 含 snow 的地面時才啟用雪地滑行。
+    updateSnowGroundState: function () {
+        this.isOnSnowGround = this.isGrounded && this.isSnowNode(this.currentGroundNode);
+
+        if (!this.isOnSnowGround && this.moveDirection === 0) {
+            this.horizontalVelocity = 0;
+        }
+    },
+
+    // 檢查節點與父節點名稱，以及 SpriteFrame 名稱是否包含 snow。
+    isSnowNode: function (node) {
+        while (node) {
+            if (this.hasSnowName(node.name)) {
+                return true;
+            }
+
+            var sprite = node.getComponent(cc.Sprite);
+            var frameName = sprite && sprite.spriteFrame ? sprite.spriteFrame.name : '';
+
+            if (this.hasSnowName(frameName)) {
+                return true;
+            }
+
+            node = node.parent;
+        }
+
+        return false;
+    },
+
+    hasSnowName: function (name) {
+        return !!name && name.toLowerCase().indexOf('snow') !== -1;
+    },
+
+    applyMovingPlatformDelta: function () {
+        if (!this.isGrounded || !this.currentMovingPlatform) {
+            return;
+        }
+
+        var platformDeltaX = this.currentMovingPlatform.getDeltaX ?
+            this.currentMovingPlatform.getDeltaX() :
+            0;
+
+        if (platformDeltaX !== 0) {
+            this.node.x += platformDeltaX;
+        }
+    },
+
+    applyClimbablePlatformDelta: function () {
+        if (!this.isClimbingLadder()) {
+            return;
+        }
+
+        var movingPlatform = this.getMovingPlatformController(this.currentLadder);
+        var platformDeltaX = movingPlatform && movingPlatform.getDeltaX ?
+            movingPlatform.getDeltaX() :
+            0;
+
+        if (platformDeltaX !== 0) {
+            this.node.x += platformDeltaX;
+        }
+    },
+
+    getMovingPlatformController: function (node) {
+        while (node) {
+            var movingPlatform = node.getComponent('MovingPlatformController');
+
+            if (movingPlatform) {
+                return movingPlatform;
+            }
+
+            node = node.parent;
+        }
+
+        return null;
     },
 
     // 將角色 X 座標限制在關卡水平範圍內。
@@ -328,13 +806,117 @@ cc.Class({
         this.node.x = cc.misc.clampf(this.node.x, this.minX, this.maxX);
     },
 
+    refreshLadderContact: function () {
+        this.currentLadder = this.findCurrentLadder();
+        this.currentClimbType = this.currentLadder ? this.getClimbableType(this.currentLadder) : '';
+    },
+
+    findCurrentLadder: function () {
+        var selfCollider = this.getComponent(cc.BoxCollider);
+        var scene = cc.director.getScene();
+
+        if (!selfCollider || !selfCollider.world || !scene) {
+            return null;
+        }
+
+        var selfAabb = selfCollider.world.aabb;
+        var ladderNodes = [];
+
+        this.collectLadderNodes(scene, ladderNodes);
+
+        for (var i = 0; i < ladderNodes.length; i++) {
+            var ladderAabb = this.getLadderAabb(ladderNodes[i]);
+
+            if (ladderAabb && this.isOverlappingLadder(selfAabb, ladderAabb, this.getClimbableType(ladderNodes[i]))) {
+                return ladderNodes[i];
+            }
+        }
+
+        return null;
+    },
+
+    collectLadderNodes: function (node, ladderNodes) {
+        if (!node || !node.active) {
+            return;
+        }
+
+        if (node.name && this.isClimbableNodeName(node.name) && node.opacity > 0) {
+            ladderNodes.push(node);
+        }
+
+        var children = node.getChildren ? node.getChildren() : [];
+
+        for (var i = 0; i < children.length; i++) {
+            this.collectLadderNodes(children[i], ladderNodes);
+        }
+    },
+
+    getLadderAabb: function (ladder) {
+        var collider = ladder.getComponent(cc.BoxCollider);
+
+        if (collider && collider.enabled && collider.world) {
+            return collider.world.aabb;
+        }
+
+        return ladder.getBoundingBoxToWorld();
+    },
+
+    isOverlappingLadder: function (selfAabb, ladderAabb, climbType) {
+        var selfCenterX = (selfAabb.xMin + selfAabb.xMax) * 0.5;
+        var ladderCenterX = (ladderAabb.xMin + ladderAabb.xMax) * 0.5;
+        var verticalOverlap = selfAabb.yMax > ladderAabb.yMin && selfAabb.yMin < ladderAabb.yMax;
+        var horizontalTolerance = climbType === 'rope' ?
+            this.ropeHorizontalTolerance :
+            this.ladderHorizontalTolerance;
+        var closeToCenter = Math.abs(selfCenterX - ladderCenterX) <=
+            ((ladderAabb.xMax - ladderAabb.xMin) * 0.5 + horizontalTolerance);
+
+        return verticalOverlap && closeToCenter;
+    },
+
+    isClimbingLadder: function () {
+        return !!this.currentLadder && (this.climbPressed || this.upPressed);
+    },
+
+    isClimbableNodeName: function (name) {
+        return name.indexOf('ladder_') === 0 ||
+            name.indexOf('rope') === 0;
+    },
+
+    isNonSolidClimbNode: function (node) {
+        while (node) {
+            if (node.name && (
+                this.isClimbableNodeName(node.name) ||
+                node.name.indexOf('rop_') === 0
+            )) {
+                return true;
+            }
+
+            node = node.parent;
+        }
+
+        return false;
+    },
+
+    getClimbableType: function (node) {
+        if (!node || !node.name) {
+            return '';
+        }
+
+        return node.name.indexOf('rope') === 0 ?
+            'rope' :
+            'ladder';
+    },
+
     // 依照目前輸入與狀態選擇要播放的角色動畫。
     updateMovementAnimation: function () {
         if (this.isActionLocked) {
             return;
         }
 
-        if (this.attackPressed) {
+        if (this.isClimbingLadder()) {
+            this.playClimb();
+        } else if (this.attackPressed) {
             this.playAttack();
         } else if (this.throwPressed) {
             this.playThrow();
@@ -342,11 +924,11 @@ cc.Class({
             this.playHurt();
         } else if (this.climbPressed) {
             this.playClimb();
-        } else if (this.pushPressed) {
+        } else if (this.pushPressed || this.pushBlockTimer > 0) {
             this.playPush();
         } else if (!this.isGrounded) {
             this.playJump();
-        } else if (this.moveDirection !== 0) {
+        } else if (this.moveDirection !== 0 || Math.abs(this.horizontalVelocity) > 12) {
             this.playRun();
         } else {
             this.playIdle();
@@ -362,6 +944,9 @@ cc.Class({
         var isDoubleJump = !this.isGrounded;
         this.isGrounded = false;
         this.groundContactTimer = 0;
+        this.currentGroundNode = null;
+        this.currentRamp = null;
+        this.isOnSnowGround = false;
         this.jumpCount += 1;
         this.velocityY = isDoubleJump ? this.doubleJumpSpeed : this.jumpSpeed;
 
@@ -420,8 +1005,20 @@ cc.Class({
         this.throwPressed = false;
         this.pushPressed = false;
         this.climbPressed = false;
+        this.upPressed = false;
         this.hurtPressed = false;
         this.jumpPressed = false;
+        this.pushBlockTimer = 0;
+        this.activePushBlock = null;
+        this.activePushBlockSide = 0;
+        this.activePushBlockContactTimer = 0;
+        this.currentLadder = null;
+        this.currentMovingPlatform = null;
+        this.currentClimbType = '';
+        this.currentGroundNode = null;
+        this.currentRamp = null;
+        this.horizontalVelocity = 0;
+        this.isOnSnowGround = false;
         this.velocityY = 0;
         this.playDeath();
     },
@@ -432,6 +1029,7 @@ cc.Class({
         this.isActionLocked = false;
         this.actionTimer = 0;
         this.velocityY = 0;
+        this.node.x = this.spawnX;
         this.node.y = this.groundY;
         this.isGrounded = false;
         this.groundContactTimer = 0;
@@ -440,8 +1038,20 @@ cc.Class({
         this.throwPressed = false;
         this.pushPressed = false;
         this.climbPressed = false;
+        this.upPressed = false;
         this.hurtPressed = false;
         this.jumpPressed = false;
+        this.pushBlockTimer = 0;
+        this.activePushBlock = null;
+        this.activePushBlockSide = 0;
+        this.activePushBlockContactTimer = 0;
+        this.currentLadder = null;
+        this.currentMovingPlatform = null;
+        this.currentClimbType = '';
+        this.currentGroundNode = null;
+        this.currentRamp = null;
+        this.horizontalVelocity = 0;
+        this.isOnSnowGround = false;
         this.playIdle();
     },
 
@@ -459,6 +1069,12 @@ cc.Class({
             case cc.macro.KEY.space:
             case cc.macro.KEY.w:
             case cc.macro.KEY.up:
+                this.upPressed = true;
+                this.refreshLadderContact();
+                if (this.currentLadder) {
+                    break;
+                }
+
                 if (!this.jumpPressed) {
                     this.jumpPressed = true;
                     this.jump();
@@ -503,6 +1119,7 @@ cc.Class({
             case cc.macro.KEY.space:
             case cc.macro.KEY.w:
             case cc.macro.KEY.up:
+                this.upPressed = false;
                 this.jumpPressed = false;
                 break;
             case cc.macro.KEY.down:

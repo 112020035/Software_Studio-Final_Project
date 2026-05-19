@@ -33,6 +33,11 @@ cc.Class({
         smoothSpeed: 6,
         followX: true,
         followY: true,
+        // 目標超過指定 X 座標後，切換成完整跟隨設定。
+        switchToFullFollowAfterX: true,
+        fullFollowStartX: 2378,
+        fullFollowX: true,
+        fullFollowY: true,
         useBounds: false,
         useViewportEdgeBounds: true,
         leftEdgeUsesTargetParent: true,
@@ -58,8 +63,11 @@ cc.Class({
             return;
         }
 
-        var desiredX = this.followX ? center.x + this.offset.x : this.node.x;
-        var desiredY = this.followY ? center.y + this.offset.y : this.node.y;
+        var fullFollowActive = this.isFullFollowActive(center);
+        var activeFollowX = fullFollowActive ? this.fullFollowX : this.followX;
+        var activeFollowY = fullFollowActive ? this.fullFollowY : this.followY;
+        var desiredX = activeFollowX ? center.x + this.offset.x : this.node.x;
+        var desiredY = activeFollowY ? center.y + this.offset.y : this.node.y;
         var minCameraX = this.getMinCameraX();
         this.logBoundsOnce(minCameraX);
 
@@ -79,6 +87,13 @@ cc.Class({
 
         this.node.x = nextX;
         this.node.y = nextY;
+    },
+
+    // 追蹤中心越過 fullFollowStartX 後切換鏡頭行為。
+    isFullFollowActive: function (center) {
+        return this.switchToFullFollowAfterX &&
+            center &&
+            center.x >= this.fullFollowStartX;
     },
 
     // 在除錯模式下輸出一次鏡頭邊界資訊。
