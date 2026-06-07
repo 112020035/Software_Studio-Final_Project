@@ -1,3 +1,9 @@
+/**
+ * KeyLock.ts
+ * Scene: Level2-part2
+ * Attach to: A lock or barrier with a physics sensor.
+ * Consumes the matching carried key, removes the lock, and awards a star.
+ */
 cc.Class({
     extends: cc.Component,
 

@@ -1,3 +1,9 @@
+/**
+ * QuestionBlockPhysics.ts
+ * Scene: Level2-part2
+ * Attach to: A physics question block that awards a coin.
+ * Animates the block, validates player hits, shows the coin, and emits coin-collected.
+ */
 cc.Class({
     extends: cc.Component,
 

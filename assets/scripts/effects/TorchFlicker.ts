@@ -1,3 +1,9 @@
+/**
+ * TorchFlicker.ts
+ * Scene: Any scene containing an animated torch.
+ * Attach to: The torch Sprite node.
+ * Alternates two sprite frames to create a lightweight flame flicker.
+ */
 cc.Class({
     extends: cc.Component,
 

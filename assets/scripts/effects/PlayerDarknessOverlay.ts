@@ -1,3 +1,9 @@
+/**
+ * PlayerDarknessOverlay.ts
+ * Scene: Secret-room gameplay areas.
+ * Attach to: A runtime overlay node created for the current player.
+ * Follows the player and leaves a configurable visible area inside a dark screen.
+ */
 cc.Class({
     extends: cc.Component,
 

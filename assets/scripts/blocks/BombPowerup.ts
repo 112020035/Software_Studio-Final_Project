@@ -1,3 +1,9 @@
+/**
+ * BombPowerup.ts
+ * Scene: Level2-part2
+ * Attach to: The bomb power-up spawned by BombBlockPhysics.
+ * Reveals the item, settles it on the ground, and emits bomb-collected on pickup.
+ */
 cc.Class({
     extends: cc.Component,
 

@@ -8,7 +8,7 @@
  * ├── ItemCountLabel  (cc.Label) 顯示目前道具數量
  * └── BackButton      (cc.Button) 返回探索場景
  */
-import GameData from "./GameData";
+import GameData from "../gameflow/GameData";
 
 const { ccclass, property } = cc._decorator;
 

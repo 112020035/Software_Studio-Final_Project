@@ -1,3 +1,9 @@
+/**
+ * Level2SnowWipeIntro.ts
+ * Scene: Level2-part2
+ * Attach to: A persistent scene controller or transition node.
+ * Draws the opening snow wipe and keeps the overlay aligned with the camera.
+ */
 cc.Class({
     extends: cc.Component,
 

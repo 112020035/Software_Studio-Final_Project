@@ -184,6 +184,7 @@ cc.Class({
 
         cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);
         cc.systemEvent.on(cc.SystemEvent.EventType.KEY_UP, this.onKeyUp, this);
+        cc.director.on('player-out-of-life', this.handleOutOfLife, this);
 
         this.playIdle();
     },
@@ -192,6 +193,7 @@ cc.Class({
     onDestroy: function () {
         cc.systemEvent.off(cc.SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);
         cc.systemEvent.off(cc.SystemEvent.EventType.KEY_UP, this.onKeyUp, this);
+        cc.director.off('player-out-of-life', this.handleOutOfLife, this);
     },
 
     // 播放待機動畫。
@@ -1267,6 +1269,10 @@ cc.Class({
 
     // 讓角色進入死亡狀態並停止所有輸入。
     die: function () {
+        if (this.isDead) {
+            return;
+        }
+
         this.isDead = true;
         this.moveDirection = 0;
         this.leftPressed = false;
@@ -1293,6 +1299,21 @@ cc.Class({
         this.airborneAnimationTimer = 0;
         this.velocityY = 0;
         this.playDeath();
+    },
+
+    handleOutOfLife: function () {
+        if (this.isDead) {
+            return;
+        }
+
+        this.node.x = this.spawnX;
+        this.node.y = this.spawnY + this.respawnYOffset;
+        this.previousX = this.node.x;
+        this.previousY = this.node.y;
+        this.die();
+        this.scheduleOnce(function () {
+            cc.director.loadScene('LevelResult');
+        }, 0.8);
     },
 
     // 重置角色狀態並回到初始地面高度。

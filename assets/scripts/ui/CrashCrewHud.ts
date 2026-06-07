@@ -1,3 +1,9 @@
+/**
+ * CrashCrewHud.ts
+ * Scene: Level2 and Level2-part2
+ * Attach to: The HUD root or a scene UI controller.
+ * Displays resources, timer, and hearts while preserving run state across both scene parts.
+ */
 var level2RunState = null;
 
 cc.Class({
@@ -83,6 +89,7 @@ cc.Class({
         this.lifeRestoreTimer = 0;
         this.isRestoringLife = false;
         this.frozen = false;
+        this.gameOverTriggered = false;
         this.labels = {};
         this.valueRoots = {};
         this.heartNodes = [];
@@ -220,8 +227,21 @@ cc.Class({
     },
 
     loseLife: function () {
+        if (this.gameOverTriggered) {
+            return;
+        }
+
         this.currentLifeHalves = Math.max(this.currentLifeHalves - 1, 0);
         this.updateHearts();
+
+        if (this.currentLifeHalves <= 0) {
+            this.gameOverTriggered = true;
+            this.frozen = true;
+            this.isRestoringLife = false;
+            this.scheduleOnce(function () {
+                cc.director.emit('player-out-of-life');
+            }, 0);
+        }
     },
 
     restoreFullLife: function () {

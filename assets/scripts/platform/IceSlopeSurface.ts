@@ -1,3 +1,9 @@
+/**
+ * IceSlopeSurface.ts
+ * Scene: Level2-part2
+ * Attach to: An icy slope or floor physics collider.
+ * Exposes low-friction movement settings used by the player while on the surface.
+ */
 cc.Class({
     extends: cc.Component,
 

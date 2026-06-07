@@ -1,3 +1,9 @@
+/**
+ * SecretRoomDoor.ts
+ * Scene: Level2-part2
+ * Attach to: A key-operated secret-room or final door.
+ * Opens for a matching key, manages secret-room visibility, or loads a target scene.
+ */
 var PlayerDarknessOverlay = require('../effects/PlayerDarknessOverlay');
 
 cc.Class({

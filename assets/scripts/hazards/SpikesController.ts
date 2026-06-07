@@ -1,3 +1,9 @@
+/**
+ * SpikesController.ts
+ * Scene: Level2 and Level2-part2
+ * Attach to: A spike hazard collider.
+ * Supports both collision systems, applies knockback, and emits player-life-lost.
+ */
 var SpikesController = cc.Class({
     extends: cc.Component,
 

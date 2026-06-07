@@ -1,3 +1,9 @@
+/**
+ * Level2SnowWipeTransition.ts
+ * Scene: Level2
+ * Attach to: A scene transition controller.
+ * Watches the player position, draws the snow wipe, and loads Level2-part2.
+ */
 cc.Class({
     extends: cc.Component,
 

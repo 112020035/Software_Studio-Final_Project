@@ -1,3 +1,9 @@
+/**
+ * GravitySpring.ts
+ * Scene: Level2-part2
+ * Attach to: A spring platform with a physics sensor.
+ * Launches the player relative to gravity and briefly displays the extended spring frame.
+ */
 cc.Class({
     extends: cc.Component,
 

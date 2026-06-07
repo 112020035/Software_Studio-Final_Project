@@ -4,7 +4,7 @@
  * 掛載節點：Canvas
  * 子節點需求：Canvas/StartButton（cc.Button）
  */
-import GameData from "./GameData";
+import GameData from "../gameflow/GameData";
 
 const { ccclass, property } = cc._decorator;
 

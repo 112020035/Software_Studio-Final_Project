@@ -1,3 +1,9 @@
+/**
+ * ParallaxLayer.ts
+ * Scene: Any scrolling gameplay scene.
+ * Attach to: A background or foreground layer.
+ * Moves the layer relative to the camera to create configurable parallax depth.
+ */
 const { ccclass, property } = cc._decorator;
 
 @ccclass

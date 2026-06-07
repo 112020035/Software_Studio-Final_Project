@@ -1,3 +1,9 @@
+/**
+ * FollowKey.ts
+ * Scene: Level2-part2
+ * Attach to: A collectible key with a physics sensor.
+ * Registers with the player, follows behind them, and can be consumed by a matching lock.
+ */
 cc.Class({
     extends: cc.Component,
 

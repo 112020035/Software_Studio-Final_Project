@@ -1,3 +1,9 @@
+/**
+ * ThrownBomb.ts
+ * Scene: Level2 and Level2-part2
+ * Attach to: A bomb instance thrown by the player.
+ * Controls launch physics, fuse animation, explosion frames, and area damage.
+ */
 var ThrownBomb = cc.Class({
     extends: cc.Component,
 

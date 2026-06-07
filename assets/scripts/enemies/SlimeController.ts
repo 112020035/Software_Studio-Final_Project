@@ -1,3 +1,9 @@
+/**
+ * SlimeController.ts
+ * Scene: Level2-part2
+ * Attach to: A slime enemy with a rigid body and physics collider.
+ * Handles patrol, chase, contact damage, stomp/attack reactions, and death.
+ */
 cc.Class({
     extends: cc.Component,
 

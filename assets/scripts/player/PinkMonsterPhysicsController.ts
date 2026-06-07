@@ -1,3 +1,9 @@
+/**
+ * PinkMonsterPhysicsController.ts
+ * Scene: Level2-part2
+ * Attach to: The physics-based Pink Monster player node.
+ * Handles movement, gravity changes, surfaces, combat actions, checkpoints, and game over.
+ */
 var ThrownBomb = require('../effects/ThrownBomb');
 
 cc.Class({
@@ -161,6 +167,7 @@ cc.Class({
         cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);
         cc.systemEvent.on(cc.SystemEvent.EventType.KEY_UP, this.onKeyUp, this);
         cc.game.on(cc.game.EVENT_HIDE, this.resetInput, this);
+        cc.director.on('player-out-of-life', this.handleOutOfLife, this);
 
         this.playIdle();
     },
@@ -169,6 +176,7 @@ cc.Class({
         cc.systemEvent.off(cc.SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);
         cc.systemEvent.off(cc.SystemEvent.EventType.KEY_UP, this.onKeyUp, this);
         cc.game.off(cc.game.EVENT_HIDE, this.resetInput, this);
+        cc.director.off('player-out-of-life', this.handleOutOfLife, this);
     },
 
     resolveSpriteSheetAnimator: function () {
@@ -803,14 +811,38 @@ cc.Class({
         if (this.body) {
             this.body.linearVelocity = cc.v2();
             this.body.angularVelocity = 0;
+            this.body.gravityScale = 0;
         }
 
         this.playDeath();
     },
 
+    handleOutOfLife: function () {
+        if (this.isDead) {
+            return;
+        }
+
+        this.applyCheckpointGravity();
+        this.node.setPosition(this.spawnX, this.spawnY + this.respawnYOffset);
+
+        if (this.body) {
+            this.body.linearVelocity = cc.v2();
+            this.body.angularVelocity = 0;
+            this.body.syncPosition(false);
+        }
+
+        this.die();
+        this.scheduleOnce(function () {
+            cc.director.loadScene('LevelResult');
+        }, 0.8);
+    },
+
     resetCharacter: function () {
         this.isDead = false;
         this.applyCheckpointGravity();
+        if (this.body) {
+            this.body.gravityScale = 1;
+        }
         this.node.setPosition(this.spawnX, this.spawnY);
         this.resetMovementState();
 

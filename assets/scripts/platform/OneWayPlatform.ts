@@ -1,3 +1,9 @@
+/**
+ * OneWayPlatform.ts
+ * Scene: Level2-part2
+ * Attach to: A one-way physics platform.
+ * Disables contacts from the pass-through side and accepts configured actor nodes.
+ */
 cc.Class({
     extends: cc.Component,
 

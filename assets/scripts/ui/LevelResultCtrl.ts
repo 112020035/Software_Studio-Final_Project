@@ -10,7 +10,7 @@
  * ├── LevelLabel      (cc.Label) 顯示已完成關卡
  * └── ContinueButton  (cc.Button) 繼續按鈕
  */
-import GameData from "./GameData";
+import GameData from "../gameflow/GameData";
 
 const { ccclass, property } = cc._decorator;
 

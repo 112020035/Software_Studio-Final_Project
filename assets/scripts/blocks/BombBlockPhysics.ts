@@ -1,3 +1,9 @@
+/**
+ * BombBlockPhysics.ts
+ * Scene: Level2-part2
+ * Attach to: A physics question block that awards bombs.
+ * Animates the block, detects a valid player hit, and spawns one bomb power-up.
+ */
 cc.Class({
     extends: cc.Component,
 

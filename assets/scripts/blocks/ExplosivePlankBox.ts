@@ -1,3 +1,9 @@
+/**
+ * ExplosivePlankBox.ts
+ * Scene: Level2 and Level2-part2
+ * Attach to: A wooden box or plank that can be destroyed by a bomb.
+ * Handles bomb damage feedback, debris creation, and removal of the broken object.
+ */
 cc.Class({
     extends: cc.Component,
 
