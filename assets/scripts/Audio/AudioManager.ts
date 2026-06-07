@@ -3,7 +3,7 @@
  * 掛載節點：任意常駐節點（建議 Canvas 下獨立節點）
  * 音檔需求：resources/audio/ 資料夾下放對應名稱的音檔
  */
-
+import { AudioEvent } from "./AudioEvent";
 type AudioName =
     | "btn_press"
     | "collision"
@@ -54,6 +54,11 @@ export default class AudioManager extends cc.Component {
 
         AudioManager.instance = this;
         cc.game.addPersistRootNode(this.node);
+        
+        cc.systemEvent.on(AudioEvent.PLAY_BGM, this.onPlayBgm, this);
+        cc.systemEvent.on(AudioEvent.PLAY_EFFECT, this.onPlayEffect, this);
+        cc.systemEvent.on(AudioEvent.STOP_BGM, this.stopBgm, this);
+        cc.log("[AudioManager] 事件監聽已註冊");
     }
 
     // ─── BGM 控制 ───────────────────────────────────────
@@ -172,5 +177,20 @@ export default class AudioManager extends cc.Component {
             this.clipMap.set(name, clip);
             callback(clip);
         });
+    }
+    private onPlayBgm(event: cc.Event.EventCustom): void {
+        cc.log("[AudioManager] 收到 PLAY_BGM 事件，name=", event.getUserData());
+        this.playBgm(event.getUserData());
+    }
+    private onPlayEffect(event: cc.Event.EventCustom): void {
+        cc.log("[AudioManager] 收到 PLAY_EFFECT 事件，name=", event.getUserData());
+        this.playEffect(event.getUserData());
+    }
+
+    protected onDestroy(): void {
+        cc.systemEvent.off(AudioEvent.PLAY_BGM, this.onPlayBgm, this);
+        cc.systemEvent.off(AudioEvent.PLAY_EFFECT, this.onPlayEffect, this);
+        cc.systemEvent.off(AudioEvent.STOP_BGM, this.stopBgm, this);
+        cc.log("[AudioManager] 事件監聽已移除");
     }
 }

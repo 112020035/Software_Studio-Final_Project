@@ -5,7 +5,7 @@
  * 子節點需求：Canvas/StartButton（cc.Button）
  */
 import GameData from "../gameflow/GameData";
-import AudioManager from "../AudioManager";
+import { AudioBroadcast } from "../Audio/AudioEvent";
 
 const { ccclass, property } = cc._decorator;
 
@@ -16,7 +16,7 @@ export default class MainMenuCtrl extends cc.Component {
         // 每次回到主選單都重置遊戲資料
         GameData.reset();
         // 播放BGM
-        AudioManager.instance?.main_menu_bgm();
+        AudioBroadcast.playBgm("main_menu_bgm");
         
         const handler = new cc.Component.EventHandler();
         handler.target = this.node;
@@ -46,6 +46,6 @@ export default class MainMenuCtrl extends cc.Component {
     }
     // btn_press的音效
     onBtnPress() {
-    AudioManager.instance?.btn_press();
-}
+        AudioBroadcast.playEffect("btn_press");
+    }
 }

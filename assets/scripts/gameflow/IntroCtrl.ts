@@ -14,7 +14,7 @@
  *
  * 每個 Slide 節點預設 active = false，由腳本控制顯示。
  */
-import AudioManager from "../AudioManager";
+import { AudioBroadcast } from "../Audio/AudioEvent";
 const { ccclass, property } = cc._decorator;
 
 @ccclass
@@ -29,7 +29,7 @@ export default class IntroCtrl extends cc.Component {
 
     start() {
         // 換BGM
-        AudioManager.instance?.story_line_bgm();
+        AudioBroadcast.playBgm("story_line_bgm");
         // 收集場景中所有 Slide 節點
         for (let i = 1; i <= 6; i++) {
             const node = cc.find("Canvas/Slide" + i);
