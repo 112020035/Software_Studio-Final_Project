@@ -65,4 +65,5 @@
       "enable": false
     }
   }
+  "start-scene": "current"
 }
