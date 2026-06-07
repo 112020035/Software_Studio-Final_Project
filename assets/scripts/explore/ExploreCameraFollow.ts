@@ -15,7 +15,7 @@
 const { ccclass, property } = cc._decorator;
 
 @ccclass
-export default class CameraFollow extends cc.Component {
+export default class ExploreCameraFollow extends cc.Component {
 
     @property(cc.Node) target: cc.Node = null;
     @property followSpeed: number = 8;
