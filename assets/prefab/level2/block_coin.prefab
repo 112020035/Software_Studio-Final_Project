@@ -13,7 +13,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "checkpoint",
+    "_name": "block_coin",
     "_objFlags": 0,
     "_parent": null,
     "_children": [],
@@ -57,8 +57,8 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        404.057,
-        -225.65,
+        695.357,
+        344.208,
         0,
         0,
         0,
@@ -83,30 +83,6 @@
     "_id": ""
   },
   {
-    "__type__": "1d14e41bDNMhb3Bfwi23TjC",
-    "_name": "",
-    "_objFlags": 0,
-    "node": {
-      "__id__": 1
-    },
-    "_enabled": true,
-    "flagSprite": null,
-    "flagBlueAFrame": {
-      "__uuid__": "90bfb6c6-45be-4226-9c05-3968e761455e"
-    },
-    "flagBlueBFrame": {
-      "__uuid__": "8a6655ce-7e89-479a-9875-53e5a907b856"
-    },
-    "flagOffFrame": {
-      "__uuid__": "70a4eb8d-033d-4bff-a161-8d4ade772f9a"
-    },
-    "animationInterval": 0.22,
-    "respawnOffsetX": 0,
-    "respawnOffsetY": 70,
-    "activateOnce": true,
-    "_id": ""
-  },
-  {
     "__type__": "cc.Sprite",
     "_name": "",
     "_objFlags": 0,
@@ -122,7 +98,7 @@
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
     "_spriteFrame": {
-      "__uuid__": "90bfb6c6-45be-4226-9c05-3968e761455e"
+      "__uuid__": "2095dd76-e92d-4af3-836a-da74503a6bcf"
     },
     "_type": 0,
     "_sizeMode": 1,
@@ -148,7 +124,7 @@
     "_enabled": true,
     "_type": 0,
     "_allowSleep": true,
-    "_gravityScale": 0,
+    "_gravityScale": 1,
     "_linearDamping": 0,
     "_angularDamping": 0,
     "_linearVelocity": {
@@ -157,7 +133,7 @@
       "y": 0
     },
     "_angularVelocity": 0,
-    "_fixedRotation": true,
+    "_fixedRotation": false,
     "enabledContactListener": true,
     "bullet": false,
     "awakeOnLoad": true,
@@ -173,8 +149,8 @@
     "_enabled": true,
     "tag": 0,
     "_density": 1,
-    "_sensor": true,
-    "_friction": 0,
+    "_sensor": false,
+    "_friction": 0.2,
     "_restitution": 0,
     "body": null,
     "_offset": {
@@ -184,9 +160,41 @@
     },
     "_size": {
       "__type__": "cc.Size",
-      "width": 32,
-      "height": 32
+      "width": 64,
+      "height": 64
     },
+    "_id": ""
+  },
+  {
+    "__type__": "d1f44ErOplDiI6LyY4/OiJN",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 1
+    },
+    "_enabled": true,
+    "activeFrames": [],
+    "usedFrame": {
+      "__uuid__": "a8aa0ebb-eaea-4385-a300-c91c92584e08"
+    },
+    "animationFps": 4,
+    "playerNodeName": "Player",
+    "playerComponentName": "PinkMonsterPhysicsController",
+    "bumpHeight": 20,
+    "bumpDuration": 0.2,
+    "hitTolerance": 8,
+    "horizontalHitPadding": 4,
+    "stopPlayerUpwardVelocity": true,
+    "coinPopupPrefab": null,
+    "coinPopupFrame": {
+      "__uuid__": "bc8c7cd0-ea38-4281-81d9-d71063f5250a"
+    },
+    "coinPopupOffsetY": 24,
+    "coinRiseHeight": 70,
+    "coinRiseDuration": 0.25,
+    "coinFallDuration": 0.22,
+    "emitCoinEvent": true,
+    "coinEventName": "coin-collected",
     "_id": ""
   },
   {

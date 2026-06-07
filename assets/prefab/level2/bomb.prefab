@@ -13,7 +13,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "checkpoint",
+    "_name": "bomb",
     "_objFlags": 0,
     "_parent": null,
     "_children": [],
@@ -45,8 +45,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 64,
-      "height": 64
+      "width": 60,
+      "height": 56
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -57,8 +57,8 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        404.057,
-        -225.65,
+        634.272,
+        369.402,
         0,
         0,
         0,
@@ -83,30 +83,6 @@
     "_id": ""
   },
   {
-    "__type__": "1d14e41bDNMhb3Bfwi23TjC",
-    "_name": "",
-    "_objFlags": 0,
-    "node": {
-      "__id__": 1
-    },
-    "_enabled": true,
-    "flagSprite": null,
-    "flagBlueAFrame": {
-      "__uuid__": "90bfb6c6-45be-4226-9c05-3968e761455e"
-    },
-    "flagBlueBFrame": {
-      "__uuid__": "8a6655ce-7e89-479a-9875-53e5a907b856"
-    },
-    "flagOffFrame": {
-      "__uuid__": "70a4eb8d-033d-4bff-a161-8d4ade772f9a"
-    },
-    "animationInterval": 0.22,
-    "respawnOffsetX": 0,
-    "respawnOffsetY": 70,
-    "activateOnce": true,
-    "_id": ""
-  },
-  {
     "__type__": "cc.Sprite",
     "_name": "",
     "_objFlags": 0,
@@ -122,7 +98,7 @@
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
     "_spriteFrame": {
-      "__uuid__": "90bfb6c6-45be-4226-9c05-3968e761455e"
+      "__uuid__": "d58863ce-1a4f-43a4-8e1d-71434b28e09e"
     },
     "_type": 0,
     "_sizeMode": 1,
@@ -146,9 +122,9 @@
       "__id__": 1
     },
     "_enabled": true,
-    "_type": 0,
+    "_type": 2,
     "_allowSleep": true,
-    "_gravityScale": 0,
+    "_gravityScale": 1,
     "_linearDamping": 0,
     "_angularDamping": 0,
     "_linearVelocity": {
@@ -157,7 +133,7 @@
       "y": 0
     },
     "_angularVelocity": 0,
-    "_fixedRotation": true,
+    "_fixedRotation": false,
     "enabledContactListener": true,
     "bullet": false,
     "awakeOnLoad": true,
@@ -173,8 +149,8 @@
     "_enabled": true,
     "tag": 0,
     "_density": 1,
-    "_sensor": true,
-    "_friction": 0,
+    "_sensor": false,
+    "_friction": 0.2,
     "_restitution": 0,
     "body": null,
     "_offset": {
@@ -184,9 +160,27 @@
     },
     "_size": {
       "__type__": "cc.Size",
-      "width": 32,
-      "height": 32
+      "width": 64,
+      "height": 64
     },
+    "_id": ""
+  },
+  {
+    "__type__": "5c0dee0d95PdZQl1nfwX8sB",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 1
+    },
+    "_enabled": true,
+    "playerNodeName": "Player",
+    "revealHeight": 20,
+    "revealDuration": 0.28,
+    "groundNormalY": 0.55,
+    "stopOnGround": true,
+    "destroyOnPlayerTouch": true,
+    "emitBombEvent": true,
+    "bombEventName": "bomb-collected",
     "_id": ""
   },
   {

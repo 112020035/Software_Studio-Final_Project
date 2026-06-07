@@ -13,7 +13,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "checkpoint",
+    "_name": "explosive_plank_box",
     "_objFlags": 0,
     "_parent": null,
     "_children": [],
@@ -57,8 +57,8 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        404.057,
-        -225.65,
+        0,
+        0,
         0,
         0,
         0,
@@ -83,30 +83,6 @@
     "_id": ""
   },
   {
-    "__type__": "1d14e41bDNMhb3Bfwi23TjC",
-    "_name": "",
-    "_objFlags": 0,
-    "node": {
-      "__id__": 1
-    },
-    "_enabled": true,
-    "flagSprite": null,
-    "flagBlueAFrame": {
-      "__uuid__": "90bfb6c6-45be-4226-9c05-3968e761455e"
-    },
-    "flagBlueBFrame": {
-      "__uuid__": "8a6655ce-7e89-479a-9875-53e5a907b856"
-    },
-    "flagOffFrame": {
-      "__uuid__": "70a4eb8d-033d-4bff-a161-8d4ade772f9a"
-    },
-    "animationInterval": 0.22,
-    "respawnOffsetX": 0,
-    "respawnOffsetY": 70,
-    "activateOnce": true,
-    "_id": ""
-  },
-  {
     "__type__": "cc.Sprite",
     "_name": "",
     "_objFlags": 0,
@@ -122,7 +98,7 @@
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
     "_spriteFrame": {
-      "__uuid__": "90bfb6c6-45be-4226-9c05-3968e761455e"
+      "__uuid__": "ce39304a-0583-4932-b575-e30e2f290615"
     },
     "_type": 0,
     "_sizeMode": 1,
@@ -148,7 +124,7 @@
     "_enabled": true,
     "_type": 0,
     "_allowSleep": true,
-    "_gravityScale": 0,
+    "_gravityScale": 1,
     "_linearDamping": 0,
     "_angularDamping": 0,
     "_linearVelocity": {
@@ -173,8 +149,8 @@
     "_enabled": true,
     "tag": 0,
     "_density": 1,
-    "_sensor": true,
-    "_friction": 0,
+    "_sensor": false,
+    "_friction": 0.8,
     "_restitution": 0,
     "body": null,
     "_offset": {
@@ -184,9 +160,33 @@
     },
     "_size": {
       "__type__": "cc.Size",
-      "width": 32,
-      "height": 32
+      "width": 64,
+      "height": 64
     },
+    "_id": ""
+  },
+  {
+    "__type__": "e4a5eOfmxhFEoL2OQ72rQS9",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 1
+    },
+    "_enabled": true,
+    "intactFrame": {
+      "__uuid__": "ce39304a-0583-4932-b575-e30e2f290615"
+    },
+    "damagedFrame": {
+      "__uuid__": "ada8fb5e-bd1c-41a5-bf44-0bd4a0090c69"
+    },
+    "blinkCount": 2,
+    "blinkInterval": 0.1,
+    "debrisCount": 4,
+    "debrisScale": 0.45,
+    "debrisSpeedX": 150,
+    "debrisSpeedY": 190,
+    "debrisLifetime": 3,
+    "debrisFadeDuration": 0.4,
     "_id": ""
   },
   {

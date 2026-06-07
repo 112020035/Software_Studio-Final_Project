@@ -13,7 +13,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "checkpoint",
+    "_name": "gravity_spring",
     "_objFlags": 0,
     "_parent": null,
     "_children": [],
@@ -46,7 +46,7 @@
     "_contentSize": {
       "__type__": "cc.Size",
       "width": 64,
-      "height": 64
+      "height": 44
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -57,8 +57,8 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        404.057,
-        -225.65,
+        0,
+        0,
         0,
         0,
         0,
@@ -83,30 +83,6 @@
     "_id": ""
   },
   {
-    "__type__": "1d14e41bDNMhb3Bfwi23TjC",
-    "_name": "",
-    "_objFlags": 0,
-    "node": {
-      "__id__": 1
-    },
-    "_enabled": true,
-    "flagSprite": null,
-    "flagBlueAFrame": {
-      "__uuid__": "90bfb6c6-45be-4226-9c05-3968e761455e"
-    },
-    "flagBlueBFrame": {
-      "__uuid__": "8a6655ce-7e89-479a-9875-53e5a907b856"
-    },
-    "flagOffFrame": {
-      "__uuid__": "70a4eb8d-033d-4bff-a161-8d4ade772f9a"
-    },
-    "animationInterval": 0.22,
-    "respawnOffsetX": 0,
-    "respawnOffsetY": 70,
-    "activateOnce": true,
-    "_id": ""
-  },
-  {
     "__type__": "cc.Sprite",
     "_name": "",
     "_objFlags": 0,
@@ -122,7 +98,7 @@
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
     "_spriteFrame": {
-      "__uuid__": "90bfb6c6-45be-4226-9c05-3968e761455e"
+      "__uuid__": "013ce4da-a967-41db-bf6c-314b796f576a"
     },
     "_type": 0,
     "_sizeMode": 1,
@@ -139,6 +115,28 @@
     "_id": ""
   },
   {
+    "__type__": "c3056V8u6xH16bVvXo0spyr",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 1
+    },
+    "_enabled": true,
+    "springFrame": {
+      "__uuid__": "013ce4da-a967-41db-bf6c-314b796f576a"
+    },
+    "springOutFrame": {
+      "__uuid__": "1a15408a-9806-403d-a1c7-9e495345e74f"
+    },
+    "springOutOffsetY": 10,
+    "outDuration": 0.25,
+    "triggerCooldown": 0.4,
+    "colliderWidth": 56,
+    "colliderHeight": 20,
+    "colliderOffsetY": -18,
+    "_id": ""
+  },
+  {
     "__type__": "cc.RigidBody",
     "_name": "",
     "_objFlags": 0,
@@ -148,7 +146,7 @@
     "_enabled": true,
     "_type": 0,
     "_allowSleep": true,
-    "_gravityScale": 0,
+    "_gravityScale": 1,
     "_linearDamping": 0,
     "_angularDamping": 0,
     "_linearVelocity": {
@@ -157,8 +155,8 @@
       "y": 0
     },
     "_angularVelocity": 0,
-    "_fixedRotation": true,
-    "enabledContactListener": true,
+    "_fixedRotation": false,
+    "enabledContactListener": false,
     "bullet": false,
     "awakeOnLoad": true,
     "_id": ""
@@ -173,8 +171,8 @@
     "_enabled": true,
     "tag": 0,
     "_density": 1,
-    "_sensor": true,
-    "_friction": 0,
+    "_sensor": false,
+    "_friction": 0.2,
     "_restitution": 0,
     "body": null,
     "_offset": {
@@ -184,8 +182,8 @@
     },
     "_size": {
       "__type__": "cc.Size",
-      "width": 32,
-      "height": 32
+      "width": 64,
+      "height": 44
     },
     "_id": ""
   },
