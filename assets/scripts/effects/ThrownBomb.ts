@@ -4,6 +4,7 @@
  * Attach to: A bomb instance thrown by the player.
  * Controls launch physics, fuse animation, explosion frames, and area damage.
  */
+import { AudioBroadcast } from "../Audio/AudioEvent";
 var ThrownBomb = cc.Class({
     extends: cc.Component,
 
@@ -110,8 +111,11 @@ var ThrownBomb = cc.Class({
         this.explosionFrameIndex = 0;
         this.node.scaleX = this.originalScaleX * this.explosionScale;
         this.node.scaleY = this.originalScaleY * this.explosionScale;
+        AudioBroadcast.playEffect("bomb");
         this.hitPlayerInRange();
         this.hitExplosiveObjectsInRange();
+
+        
 
         if (this.body) {
             this.body.linearVelocity = cc.v2();

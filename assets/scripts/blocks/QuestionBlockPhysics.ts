@@ -4,6 +4,8 @@
  * Attach to: A physics question block that awards a coin.
  * Animates the block, validates player hits, shows the coin, and emits coin-collected.
  */
+import { AudioBroadcast } from "../Audio/AudioEvent";
+
 cc.Class({
     extends: cc.Component,
 
@@ -90,7 +92,8 @@ cc.Class({
                 : Math.max(velocity.y, 0);
             otherCollider.body.linearVelocity = velocity;
         }
-
+        
+        AudioBroadcast.playEffect("questionblock");
         this.bump();
         this.spawnCoinPopup();
 

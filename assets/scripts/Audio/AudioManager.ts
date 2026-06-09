@@ -20,7 +20,10 @@ type AudioName =
     | "run_on_water"
     | "shotting"
     | "story_line_bgm"
-    | "warning";
+    | "warning"
+    | "coin"
+    | "bomb"
+    | "questionblock";
 
 const BGM_NAMES: AudioName[] = [
     "main_menu_bgm",
@@ -124,6 +127,9 @@ export default class AudioManager extends cc.Component {
     public run_on_water(loop: boolean = true): void { this.playEffect("run_on_water", loop); }
     public shotting(): void { this.playEffect("shotting"); }
     public warning(): void { this.playEffect("warning"); }
+    public coin(): void { this.playEffect("coin"); }
+    public bomb(): void { this.playEffect("bomb"); }
+    public questionblock(): void { this.playEffect("questionblock"); }
 
     public main_menu_bgm(): void { this.playBgm("main_menu_bgm"); }
     public main_scene_bgm(): void { this.playBgm("main_scene_bgm"); }

@@ -4,6 +4,7 @@
  * Attach to: The physics-based Pink Monster player node.
  * Handles movement, gravity changes, surfaces, combat actions, checkpoints, and game over.
  */
+import { AudioBroadcast } from "../Audio/AudioEvent";
 var ThrownBomb = require('../effects/ThrownBomb');
 
 cc.Class({
@@ -171,6 +172,10 @@ cc.Class({
 
         this.playIdle();
     },
+    start: function () {  
+        // 確保 BGM 在進入關卡時就開始播放
+        AudioBroadcast.playBgm("level2_bgm");
+     },
 
     onDestroy: function () {
         cc.systemEvent.off(cc.SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);
@@ -875,10 +880,12 @@ cc.Class({
             case cc.macro.KEY.left:
             case cc.macro.KEY.a:
                 this.leftPressed = true;
+                AudioBroadcast.playEffect('run_on_ground');
                 break;
             case cc.macro.KEY.right:
             case cc.macro.KEY.d:
                 this.rightPressed = true;
+                AudioBroadcast.playEffect('run_on_ground');
                 break;
             case cc.macro.KEY.space:
             case cc.macro.KEY.w:
@@ -887,6 +894,8 @@ cc.Class({
                     this.jumpPressed = true;
                     this.queueJump();
                 }
+
+                AudioBroadcast.playEffect('jump');
                 break;
             case cc.macro.KEY.r:
                 if (!this.throwPressed && this.tryThrowBomb()) {
@@ -917,10 +926,12 @@ cc.Class({
             case cc.macro.KEY.left:
             case cc.macro.KEY.a:
                 this.leftPressed = false;
+                AudioBroadcast.stopEffect("run_on_ground");
                 break;
             case cc.macro.KEY.right:
             case cc.macro.KEY.d:
                 this.rightPressed = false;
+                AudioBroadcast.stopEffect("run_on_ground");
                 break;
             case cc.macro.KEY.space:
             case cc.macro.KEY.w:
