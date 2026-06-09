@@ -20,7 +20,7 @@
  * 測試快捷鍵： (TODO:快捷鍵只是暫時的，之後拔掉)
  * - Esc：返回 Explore 主探索場景
  */
-import AudioManager from "../AudioManager";
+import { AudioBroadcast } from "../Audio/AudioEvent";
 const { ccclass } = cc._decorator;
 
 @ccclass
@@ -28,16 +28,10 @@ export default class Level2Ctrl extends cc.Component {
     onLoad() {
         cc.log("Level2Ctrl loaded: press Esc to return Explore");
         cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);
-        // 測試的時候無法連貫地從 Intro 進入 Level2，先確保在 Level2 也能聽到 BGM
-        if (!AudioManager.instance) {
-            const audioNode = new cc.Node("AudioManager");
-            audioNode.addComponent(AudioManager);
-            cc.director.getScene().addChild(audioNode);
-        }
     }
     start() {
         // 換BGM
-        AudioManager.instance?.level2_bgm();
+        AudioBroadcast.playBgm("level2_bgm");
         cc.log("Level2Ctrl start: BGM should be playing");
     }
 

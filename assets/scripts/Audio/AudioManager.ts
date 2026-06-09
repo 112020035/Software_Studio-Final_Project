@@ -58,7 +58,7 @@ export default class AudioManager extends cc.Component {
         cc.systemEvent.on(AudioEvent.PLAY_BGM, this.onPlayBgm, this);
         cc.systemEvent.on(AudioEvent.PLAY_EFFECT, this.onPlayEffect, this);
         cc.systemEvent.on(AudioEvent.STOP_BGM, this.stopBgm, this);
-        cc.log("[AudioManager] 事件監聽已註冊");
+        // cc.log("[AudioManager] 事件監聽已註冊");
     }
 
     // ─── BGM 控制 ───────────────────────────────────────
@@ -167,23 +167,21 @@ export default class AudioManager extends cc.Component {
             return;
         }
 
-        // cc.log(`[AudioManager] 嘗試載入：audio/${name}`); // ← 加這行
         cc.loader.loadRes(`audio/${name}`, cc.AudioClip, (err, clip) => {
             if (err || !clip) {
-                cc.error(`[AudioManager] 載入失敗：`, err); // ← 改成 error 看詳細錯誤
+                cc.error(`[AudioManager] 載入失敗：`, err); 
                 return;
             }
-            // cc.log(`[AudioManager] 載入成功：audio/${name}`); // ← 加這行
             this.clipMap.set(name, clip);
             callback(clip);
         });
     }
     private onPlayBgm(event: cc.Event.EventCustom): void {
-        cc.log("[AudioManager] 收到 PLAY_BGM 事件，name=", event.getUserData());
+        // cc.log("[AudioManager] 收到 PLAY_BGM 事件，name=", event.getUserData());
         this.playBgm(event.getUserData());
     }
     private onPlayEffect(event: cc.Event.EventCustom): void {
-        cc.log("[AudioManager] 收到 PLAY_EFFECT 事件，name=", event.getUserData());
+        // cc.log("[AudioManager] 收到 PLAY_EFFECT 事件，name=", event.getUserData());
         this.playEffect(event.getUserData());
     }
 
@@ -191,6 +189,6 @@ export default class AudioManager extends cc.Component {
         cc.systemEvent.off(AudioEvent.PLAY_BGM, this.onPlayBgm, this);
         cc.systemEvent.off(AudioEvent.PLAY_EFFECT, this.onPlayEffect, this);
         cc.systemEvent.off(AudioEvent.STOP_BGM, this.stopBgm, this);
-        cc.log("[AudioManager] 事件監聽已移除");
+        // cc.log("[AudioManager] 事件監聽已移除");
     }
 }
