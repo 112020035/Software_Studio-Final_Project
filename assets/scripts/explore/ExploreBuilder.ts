@@ -52,7 +52,7 @@ export default class GroundColliderBuilder extends cc.Component {
 
         // ── 合併碰撞體（GROUND 實心）────────────────────────
         this.buildMergedColliders(mapData, originX, originY, groundLayer);
-        this.setupCamera(originX, this._mapCols * TILE_SIZE);
+        // this.setupCamera(originX, this._mapCols * TILE_SIZE);
     }
 
     // ─────────────────────────────────────────────────────────
@@ -142,17 +142,16 @@ export default class GroundColliderBuilder extends cc.Component {
         layer.addChild(node);
     }
 
-    private setupCamera(originX: number, mapWidth: number) {
-        if (!this.cameraNode || !this.playerNode) return;
-        const cam = this.cameraNode.getComponent("CameraFollow") as any;
-        if (!cam) { cc.error("[LevelBuilder] 找不到 CameraFollow"); return; }
+    // private setupCamera(originX: number, mapWidth: number) {
+    //     if (!this.cameraNode) return;
+    //     const cam = this.cameraNode.getComponent("ExploreCameraFollow") as any;
+    //     if (!cam) { cc.error("[LevelBuilder] 找不到 CameraFollow"); return; }
 
-        cam.mapMinX = originX;
-        cam.mapMaxX = originX + mapWidth;
-        cam.mapMinY = -this.CANVAS_H / 2;                    // 新增
-        cam.mapMaxY = -this.CANVAS_H / 2 + this.getMapHeight(); // 新增
-        cam.init(this.playerNode);
-    }
+    //     cam.mapMinX = originX;
+    //     cam.mapMaxX = originX + mapWidth;
+    //     cam.mapMinY = -this.CANVAS_H / 2;                    // 新增
+    //     cam.mapMaxY = -this.CANVAS_H / 2 + this.getMapHeight(); // 新增
+    // }
 
     private createLayer(name: string): cc.Node {
         const node = new cc.Node(name);

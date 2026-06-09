@@ -103,21 +103,9 @@ export default class ExploreCtrl extends cc.Component {
             };
             playerCollider.onEnterLevel = (index: number) => {
                 if (this.promptLevels[index]) this.promptLevels[index].active = true;
-                // 靠近時播放 entry 動畫
-                const entry = this.levelEntries[index];
-                if (entry) {
-                    const anim = entry.getComponent(cc.Animation);
-                    if (anim) anim.play(`entry${index + 1}`);
-                }
             };
             playerCollider.onExitLevel = (index: number) => {
                 if (this.promptLevels[index]) this.promptLevels[index].active = false;
-                // 離開時停止 entry 動畫
-                const entry = this.levelEntries[index];
-                if (entry) {
-                    const anim = entry.getComponent(cc.Animation);
-                    if (anim) anim.stop();
-                }
             };
         }
 
@@ -127,9 +115,6 @@ export default class ExploreCtrl extends cc.Component {
             const anim = entry.getComponent(cc.Animation);
             if (anim) anim.play(`entry${i + 1}`);
         });
-
-        if (this.promptInventory) this.promptInventory.active = false;
-        this.promptLevels.forEach(p => { if (p) p.active = false; });
 
         cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);
         cc.systemEvent.on(cc.SystemEvent.EventType.KEY_UP,   this.onKeyUp,   this);
