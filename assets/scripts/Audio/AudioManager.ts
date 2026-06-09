@@ -39,8 +39,8 @@ export default class AudioManager extends cc.Component {
     private effectIds!: Map<AudioName, number>;
     private bgmId: number = -1;
     private currentBgm: AudioName | null = null;
-    private bgmVolume: number = 1;
-    private effectVolume: number = 1;
+    public bgmVolume: number = 1;
+    public effectVolume: number = 1;
 
     protected onLoad(): void {
         if (AudioManager.instance && AudioManager.instance !== this) {
@@ -59,6 +59,8 @@ export default class AudioManager extends cc.Component {
         cc.systemEvent.on(AudioEvent.PLAY_EFFECT, this.onPlayEffect, this);
         cc.systemEvent.on(AudioEvent.STOP_BGM, this.stopBgm, this);
         cc.systemEvent.on(AudioEvent.STOP_EFFECT, this.onStopEffect, this);
+        cc.systemEvent.on(AudioEvent.SET_BGM_VOLUME, this.onSetBgmVolume, this);
+        cc.systemEvent.on(AudioEvent.SET_EFFECT_VOLUME, this.onSetEffectVolume, this);
         // cc.log("[AudioManager] 事件監聽已註冊");
     }
 
@@ -195,5 +197,13 @@ export default class AudioManager extends cc.Component {
         cc.systemEvent.off(AudioEvent.PLAY_EFFECT, this.onPlayEffect, this);
         cc.systemEvent.off(AudioEvent.STOP_BGM, this.stopBgm, this);
         // cc.log("[AudioManager] 事件監聽已移除");
+    }
+    // ─── 音量設定事件處理 ────────────────────────────────────
+    private onSetBgmVolume(event: cc.Event.EventCustom): void {
+        this.setBgmVolume(event.getUserData());
+    }
+
+    private onSetEffectVolume(event: cc.Event.EventCustom): void {
+        this.setEffectVolume(event.getUserData());
     }
 }

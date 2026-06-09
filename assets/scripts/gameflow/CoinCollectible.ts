@@ -4,6 +4,7 @@
  * Attach to: The reusable coin prefab.
  * Animates coin frames, detects either player controller, and emits coin-collected once.
  */
+import { AudioBroadcast } from "../Audio/AudioEvent";
 var CoinCollectible = cc.Class({
     extends: cc.Component,
 
@@ -33,6 +34,7 @@ var CoinCollectible = cc.Class({
 
     update: function (dt) {
         if (this.collected) {
+            AudioBroadcast.playEffect("coin");
             return;
         }
 

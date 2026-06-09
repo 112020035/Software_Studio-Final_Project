@@ -27,6 +27,7 @@
  * - 碰撞系統：透過 Cocos collision aabb 判斷地面、天花板與牆面修正。
  * - 動畫系統：依照角色狀態切換 idle / run / jump / attack 等動作。
  */
+import { AudioBroadcast } from "../Audio/AudioEvent";
 var ThrownBomb = require('../effects/ThrownBomb');
 
 cc.Class({
@@ -177,6 +178,7 @@ cc.Class({
         this.isOnSnowGround = false;
         this.isAirborneAnimation = false;
         this.airborneAnimationTimer = 0;
+        this.isRunning = false;
 
         var collisionManager = cc.director.getCollisionManager();
         collisionManager.enabled = true;
@@ -1356,10 +1358,12 @@ cc.Class({
             case cc.macro.KEY.left:
             case cc.macro.KEY.a:
                 this.leftPressed = true;
+                AudioBroadcast.playEffect("run_on_ground");
                 break;
             case cc.macro.KEY.right:
             case cc.macro.KEY.d:
                 this.rightPressed = true;
+                AudioBroadcast.playEffect("run_on_ground");
                 break;
             case cc.macro.KEY.space:
             case cc.macro.KEY.w:
@@ -1374,6 +1378,9 @@ cc.Class({
                     this.jumpPressed = true;
                     this.jump();
                 }
+
+                // jump sound 
+                AudioBroadcast.playEffect('jump');
                 break;
             case cc.macro.KEY.r:
                 if (!this.throwPressed && this.tryThrowBomb()) {
@@ -1405,10 +1412,12 @@ cc.Class({
             case cc.macro.KEY.left:
             case cc.macro.KEY.a:
                 this.leftPressed = false;
+                AudioBroadcast.stopEffect("run_on_ground");
                 break;
             case cc.macro.KEY.right:
             case cc.macro.KEY.d:
                 this.rightPressed = false;
+                AudioBroadcast.stopEffect("run_on_ground");
                 break;
             case cc.macro.KEY.space:
             case cc.macro.KEY.w:

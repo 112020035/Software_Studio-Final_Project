@@ -24,6 +24,7 @@ export default class MainMenuCtrl extends cc.Component {
         handler.handler = "onStartGame";
 
         const startBtn = cc.find("Canvas/StartButton");
+        const settingsBtn = cc.find("Canvas/SettingsButton");
         if (startBtn) {
             const button = startBtn.getComponent(cc.Button);
             
@@ -36,6 +37,23 @@ export default class MainMenuCtrl extends cc.Component {
             
             // 換場景
             button.clickEvents.push(handler);
+        } else if (settingsBtn){
+            const button = settingsBtn.getComponent(cc.Button);
+            
+            // btn_press 音效
+            const soundHandler = new cc.Component.EventHandler();
+            soundHandler.target = this.node;
+            soundHandler.component = "MainMenuCtrl";
+            soundHandler.handler = "onBtnPress";
+            button.clickEvents.push(soundHandler);
+            
+            // 換場景
+            const settingsHandler = new cc.Component.EventHandler();
+            settingsHandler.target = this.node;
+            settingsHandler.component = "MainMenuCtrl";
+            settingsHandler.handler = "onSettings";
+            button.clickEvents.push(settingsHandler);
+            
         } else {
             cc.warn("MainMenuCtrl: 找不到 Canvas/StartButton");
         }

@@ -45,6 +45,7 @@ export default class ExploreCtrl extends cc.Component {
     private _idleColliderOffset:     cc.Vec2 = null;
     private _activeColliderOffset:   cc.Vec2 = null;
 
+    // 新增一個變數來追蹤是否正在飛行，避免重複播放音效
     private isCraftFlying: boolean = false;
 
     // 私有方法：統一判斷翻轉狀態
