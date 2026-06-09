@@ -2,6 +2,7 @@
  * ExploreCtrl.ts
  */
 import GameData from "./GameData";
+import { AudioBroadcast } from "../Audio/AudioEvent";
 
 const { ccclass, property } = cc._decorator;
 
@@ -43,6 +44,8 @@ export default class ExploreCtrl extends cc.Component {
     private _originalColliderRadius: number  = null;
     private _idleColliderOffset:     cc.Vec2 = null;
     private _activeColliderOffset:   cc.Vec2 = null;
+
+    private isCraftFlying: boolean = false;
 
     // 私有方法：統一判斷翻轉狀態
     private isFlipped(): boolean {
@@ -120,6 +123,11 @@ export default class ExploreCtrl extends cc.Component {
         cc.systemEvent.on(cc.SystemEvent.EventType.KEY_UP,   this.onKeyUp,   this);
     }
 
+    start() {
+        // 換BGM
+        AudioBroadcast.playBgm("main_scene_bgm");
+    }
+
     private onKeyDown(e: cc.Event.EventKeyboard) {
         this.keys.add(e.keyCode);
         if (e.keyCode === cc.macro.KEY.e) this.tryInteract();
@@ -127,6 +135,12 @@ export default class ExploreCtrl extends cc.Component {
 
     private onKeyUp(e: cc.Event.EventKeyboard) {
         this.keys.delete(e.keyCode);
+
+        // stopEffect
+        if (e.keyCode === cc.macro.KEY.w || e.keyCode === cc.macro.KEY.a || e.keyCode === cc.macro.KEY.d) {
+            this.isCraftFlying = false;
+            AudioBroadcast.stopEffect("craft_flying");
+        }
     }
 
     update(dt: number) {
@@ -147,6 +161,11 @@ export default class ExploreCtrl extends cc.Component {
                     Math.cos(rad) * this.thrust * this.sideThrustRatio),
                 pos, true
             );
+            // flying 音效：開始飛行時播放，放開後停止
+            if (!this.isCraftFlying) {
+                this.isCraftFlying = true;
+                AudioBroadcast.playEffect("craft_flying");
+            }
         }
 
         if (this.keys.has(cc.macro.KEY.a)) {
@@ -161,6 +180,11 @@ export default class ExploreCtrl extends cc.Component {
                     Math.cos(rad) * this.thrust * this.sideThrustRatio),
                 pos, true
             );
+            // flying 音效：開始飛行時播放，放開後停止
+            if (!this.isCraftFlying) {
+                this.isCraftFlying = true;
+                AudioBroadcast.playEffect("craft_flying");
+            }
         }
 
         // ── 旋轉慣性阻尼（放開後逐漸停止）─────────
@@ -177,6 +201,11 @@ export default class ExploreCtrl extends cc.Component {
                 cc.v2(Math.sin(rad) * this.thrust, Math.cos(rad) * this.thrust),
                 pos, true
             );
+            // flying 音效：開始飛行時播放，放開後停止
+            if (!this.isCraftFlying) {
+                this.isCraftFlying = true;
+                AudioBroadcast.playEffect("craft_flying");
+            }
         }
 
         this.updateAnimation();
@@ -295,6 +324,7 @@ export default class ExploreCtrl extends cc.Component {
         // Entry：找到目前顯示中的 prompt
         for (let i = 0; i < this.promptLevels.length; i++) {
             if (this.promptLevels[i]?.active) {
+                AudioBroadcast.playEffect("enter_level");
                 this.enterLevel(i + 1);
                 return;
             }

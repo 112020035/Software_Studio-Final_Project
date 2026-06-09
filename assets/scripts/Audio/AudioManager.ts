@@ -58,6 +58,7 @@ export default class AudioManager extends cc.Component {
         cc.systemEvent.on(AudioEvent.PLAY_BGM, this.onPlayBgm, this);
         cc.systemEvent.on(AudioEvent.PLAY_EFFECT, this.onPlayEffect, this);
         cc.systemEvent.on(AudioEvent.STOP_BGM, this.stopBgm, this);
+        cc.systemEvent.on(AudioEvent.STOP_EFFECT, this.onStopEffect, this);
         // cc.log("[AudioManager] 事件監聽已註冊");
     }
 
@@ -101,6 +102,10 @@ export default class AudioManager extends cc.Component {
     public stopAllEffects(): void {
         this.effectIds.forEach((audioId) => cc.audioEngine.stop(audioId));
         this.effectIds.clear();
+    }
+
+    private onStopEffect(event: cc.Event.EventCustom): void {
+        this.stopEffect(event.getUserData());
     }
 
     // ─── 語意化播放方法 ──────────────────────────────────
