@@ -659,7 +659,7 @@
     "_lineHeight": 25,
     "_enableWrapText": false,
     "_N$file": {
-      "__uuid__": "d304b678-dca6-4ef0-8980-284f3027cc14"
+      "__uuid__": "21973f39-43bf-416a-a708-6b506776de8b"
     },
     "_isSystemFontUsed": false,
     "_spacingX": 0,
@@ -973,7 +973,7 @@
     "_contentSize": {
       "__type__": "cc.Size",
       "width": 150,
-      "height": 25
+      "height": 20
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -1027,10 +1027,10 @@
     "_string": "SETTING",
     "_N$string": "SETTING",
     "_fontSize": 80,
-    "_lineHeight": 25,
+    "_lineHeight": 20,
     "_enableWrapText": false,
     "_N$file": {
-      "__uuid__": "d304b678-dca6-4ef0-8980-284f3027cc14"
+      "__uuid__": "21973f39-43bf-416a-a708-6b506776de8b"
     },
     "_isSystemFontUsed": false,
     "_spacingX": 0,

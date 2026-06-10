@@ -1,7 +1,7 @@
 /**
  * ExploreCtrl.ts
  */
-import GameData from "./GameData";
+import GameData from "../gameflow/GameData";
 import { AudioBroadcast } from "../Audio/AudioEvent";
 
 const { ccclass, property } = cc._decorator;
@@ -332,15 +332,20 @@ export default class ExploreCtrl extends cc.Component {
         }
     }
 
-    private distTo(x1: number, y1: number, x2: number, y2: number): number {
-        return Math.sqrt((x1-x2)**2 + (y1-y2)**2);
-    }
-
     private enterLevel(level: number) {
         switch (level) {
-            case 1: cc.director.loadScene("Level1"); break;
-            case 2: cc.director.loadScene("Level2"); break;
-            case 3: cc.director.loadScene("Level3"); break;
+            case 1: 
+                GameData.enterlevel(level);
+                cc.director.loadScene("Level1");
+                break;
+            case 2: 
+                GameData.enterlevel(level);
+                cc.director.loadScene("Level2"); 
+                break;
+            case 3: 
+                GameData.enterlevel(level);
+                cc.director.loadScene("Level3"); 
+                break;
             default:
                 GameData.calcEnding();
                 cc.director.loadScene("Ending");

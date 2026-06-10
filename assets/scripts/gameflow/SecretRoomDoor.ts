@@ -179,14 +179,49 @@ cc.Class({
         }
 
         if (this.targetScene) {
+            var targetScene = this.targetScene;
+            var isLevelResult = (targetScene === 'LevelResult');
+
+            // 如果是跳結算畫面，先凍結計時並把數值存進 GameData
+            if (isLevelResult) {
+                var scene = cc.director.getScene();
+                var hud = scene && this.findComponentRecursive(scene, 'CrashCrewHud');
+                if (hud) {
+                    hud.freezeTime();
+
+                    var GameData = require('GameData').default;
+                    GameData.levelTime    = Math.floor(hud.remainingTime);
+                    GameData.coins        = Math.floor(hud.coins);
+
+                    // 品質：用 stars 數換算
+                    var levelIndex   = GameData.currentLevel - 1;
+                    var quality      = hud.remainingTime >= 90 ? 2 : hud.remainingTime >= 40 ? 1 : 0;
+                    GameData.partQualities[levelIndex] = quality;
+
+                    cc.log('[SecretRoomDoor] 存檔 → time:', GameData.levelTime, 'coins:', GameData.coins, 'quality:', quality);
+                }
+            }
+
             this.scheduleOnce(function () {
-                cc.director.loadScene(this.targetScene);
+                cc.director.loadScene(targetScene);
             }, Math.max(this.loadSceneDelay, 0));
         }
+
 
         if (this.useSecretRoom) {
             this.enterSecretRoom(player);
         }
+    },
+
+    findComponentRecursive: function (node, componentName) {
+        if (!node) { return null; }
+        var c = node.getComponent(componentName);
+        if (c) { return c; }
+        for (var i = 0; i < node.childrenCount; i++) {
+            var found = this.findComponentRecursive(node.children[i], componentName);
+            if (found) { return found; }
+        }
+        return null;
     },
 
     enterSecretRoom: function (player) {

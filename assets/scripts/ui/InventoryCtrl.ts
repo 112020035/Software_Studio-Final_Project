@@ -1,13 +1,3 @@
-/**
- * InventoryCtrl.ts
- * 場景：Inventory（Slide 14，飛船裝備管理）
- * 掛載節點：Canvas
- *
- * 場景節點結構：
- * Canvas
- * ├── ItemCountLabel  (cc.Label) 顯示目前道具數量
- * └── BackButton      (cc.Button) 返回探索場景
- */
 import GameData from "../gameflow/GameData";
 
 const { ccclass, property } = cc._decorator;
@@ -18,9 +8,40 @@ export default class InventoryCtrl extends cc.Component {
     @property(cc.Label)
     itemCountLabel: cc.Label = null;
 
+    @property(cc.Sprite) part1: cc.Sprite = null;
+    @property(cc.Sprite) part2: cc.Sprite = null;
+    @property(cc.Sprite) part3: cc.Sprite = null;
+
+    // 順序同 LevelResultCtrl：[道具0瑕疵, 道具0一般, 道具0最佳, 道具1瑕疵, ...]
+    @property([cc.SpriteFrame])
+    partFrames: cc.SpriteFrame[] = [];
+
     start() {
         if (this.itemCountLabel) {
             this.itemCountLabel.string = `已收集道具：${GameData.itemCount}`;
+        }
+
+        const parts = [this.part1, this.part2, this.part3];
+
+        for (let i = 0; i < 3; i++) {
+            const quality = GameData.partQualities[i];
+            const sprite  = parts[i];
+
+            if (!sprite) continue;
+
+            if (quality === -1) {
+                // 尚未獲得，隱藏節點
+                sprite.node.active = false;
+            } else {
+                sprite.node.active = true;
+                const frameIndex = i * 3 + quality;
+                const frame = this.partFrames[frameIndex];
+                if (frame) {
+                    sprite.spriteFrame = frame;
+                } else {
+                    cc.warn(`[InventoryCtrl] partFrames[${frameIndex}] 未設定`);
+                }
+            }
         }
 
         this.bindButton("Canvas/BackButton", "onBack");

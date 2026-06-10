@@ -511,9 +511,17 @@
     "doubleJumpDustTexture": {
       "__uuid__": "e9d2eda5-c059-4d6b-9a31-9e93d4133c32"
     },
+    "bombPrefab": null,
+    "bombFrame": null,
+    "bombActiveFrame": null,
+    "explosionFrames": [],
+    "bombThrowSpeedX": 260,
+    "bombThrowSpeedY": 180,
+    "bombThrowOffsetX": 42,
+    "bombThrowOffsetY": 12,
     "moveSpeed": 160,
-    "jumpSpeed": 360,
-    "doubleJumpSpeed": 330,
+    "jumpSpeed": 400,
+    "doubleJumpSpeed": 350,
     "gravity": 900,
     "maxJumpCount": 2,
     "dustYOffset": 0,
@@ -523,6 +531,24 @@
     "minX": -170,
     "maxX": 99999,
     "collisionSkin": 0.5,
+    "pullGrabDistance": 16,
+    "respawnYOffset": 80,
+    "climbSpeed": 130,
+    "ladderHorizontalTolerance": 18,
+    "ropeHorizontalTolerance": 40,
+    "ropeCenterPullStrength": 0.25,
+    "ropePlatformSnapDistance": 10,
+    "ropePlatformExitVerticalSearch": 96,
+    "ropePlatformExitHorizontalTolerance": 36,
+    "snowAcceleration": 430,
+    "snowFriction": 45,
+    "snowTurnBrake": 180,
+    "rampAcceleration": 360,
+    "rampFriction": 18,
+    "rampGravityAcceleration": 260,
+    "rampMaxSlideSpeed": 260,
+    "airborneAnimationDelay": 0.08,
+    "airborneAnimationSpeed": 20,
     "_id": "ffu6wTqw9Ga7fV9wrhk3j9"
   },
   {
@@ -541,7 +567,7 @@
     },
     "_size": {
       "__type__": "cc.Size",
-      "width": 24,
+      "width": 18,
       "height": 28
     },
     "_id": "b4c9mXm7BPPoMpr5qt9VzA"
