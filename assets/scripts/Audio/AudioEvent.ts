@@ -10,7 +10,22 @@ export enum AudioEvent {
 }
 
 export class AudioBroadcast {
+    private static ensureManager(): void {
+        if (AudioManager.instance) return;
+
+        const scene = cc.director.getScene();
+        if (!scene) {
+            cc.warn("[AudioBroadcast] 無法建立 AudioManager：目前沒有作用中的場景");
+            return;
+        }
+
+        const node = new cc.Node("AudioManager");
+        scene.addChild(node);
+        node.addComponent(AudioManager);
+    }
+
     static playBgm(name: string): void {
+        this.ensureManager();
         const event = new cc.Event.EventCustom(AudioEvent.PLAY_BGM, true);
         event.setUserData(name);
         cc.systemEvent.dispatchEvent(event);
@@ -18,28 +33,33 @@ export class AudioBroadcast {
     }
 
     static playEffect(name: string): void {
+        this.ensureManager();
         const event = new cc.Event.EventCustom(AudioEvent.PLAY_EFFECT, true);
         event.setUserData(name);
         cc.systemEvent.dispatchEvent(event);
     }
 
     static stopBgm(): void {
+        this.ensureManager();
         const event = new cc.Event.EventCustom(AudioEvent.STOP_BGM, true);
         cc.systemEvent.dispatchEvent(event);
     }
 
     static stopEffect(name: string): void {
+        this.ensureManager();
         const event = new cc.Event.EventCustom(AudioEvent.STOP_EFFECT, true);
         event.setUserData(name);
         cc.systemEvent.dispatchEvent(event);
     }
     static setBgmVolume(volume: number): void {
+        this.ensureManager();
         const event = new cc.Event.EventCustom(AudioEvent.SET_BGM_VOLUME, true);
         event.setUserData(volume);
         cc.systemEvent.dispatchEvent(event);
     }
 
     static setEffectVolume(volume: number): void {
+        this.ensureManager();
         const event = new cc.Event.EventCustom(AudioEvent.SET_EFFECT_VOLUME, true);
         event.setUserData(volume);
         cc.systemEvent.dispatchEvent(event);

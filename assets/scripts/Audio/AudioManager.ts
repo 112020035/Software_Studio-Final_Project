@@ -10,7 +10,7 @@ type AudioName =
     | "craft_flying"
     | "craft_turning"
     | "damage"
-    | "enter_to_level_game"
+    | "enter_level"
     | "jump"
     | "level2_bgm"
     | "main_menu_bgm"
@@ -120,7 +120,7 @@ export default class AudioManager extends cc.Component {
     public craft_flying(loop: boolean = true): void { this.playEffect("craft_flying", loop); }
     public craft_turning(loop: boolean = true): void { this.playEffect("craft_turning", loop); }
     public damage(): void { this.playEffect("damage"); }
-    public enter_to_level_game(): void { this.playEffect("enter_to_level_game"); }
+    public enter_level(): void { this.playEffect("enter_level"); }
     public jump(): void { this.playEffect("jump"); }
     public recharge(): void { this.playEffect("recharge"); }
     public run_on_ground(loop: boolean = true): void { this.playEffect("run_on_ground", loop); }

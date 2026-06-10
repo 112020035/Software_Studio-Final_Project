@@ -1,7 +1,7 @@
 /**
  * ExploreCtrl.ts
  */
-import GameData from "./GameData";
+import GameData from "../gameflow/GameData";
 import { AudioBroadcast } from "../Audio/AudioEvent";
 
 const { ccclass, property } = cc._decorator;
