@@ -11,8 +11,10 @@ type AudioName =
     | "craft_turning"
     | "damage"
     | "enter_level"
+    | "gun_shoot"
     | "jump"
     | "level2_bgm"
+    | "level3_bgm"
     | "main_menu_bgm"
     | "main_scene_bgm"
     | "recharge"
@@ -30,6 +32,7 @@ const BGM_NAMES: AudioName[] = [
     "main_scene_bgm",
     "story_line_bgm",
     "level2_bgm",
+    "level3_bgm"
 ];
 
 const { ccclass } = cc._decorator;
@@ -121,6 +124,7 @@ export default class AudioManager extends cc.Component {
     public craft_turning(loop: boolean = true): void { this.playEffect("craft_turning", loop); }
     public damage(): void { this.playEffect("damage"); }
     public enter_level(): void { this.playEffect("enter_level"); }
+    public gun_shoot(): void { this.playEffect("gun_shoot"); }
     public jump(): void { this.playEffect("jump"); }
     public recharge(): void { this.playEffect("recharge"); }
     public run_on_ground(loop: boolean = true): void { this.playEffect("run_on_ground", loop); }
@@ -135,6 +139,7 @@ export default class AudioManager extends cc.Component {
     public main_scene_bgm(): void { this.playBgm("main_scene_bgm"); }
     public story_line_bgm(): void { this.playBgm("story_line_bgm"); }
     public level2_bgm(): void { this.playBgm("level2_bgm"); }
+    public level3_bgm(): void { this.playBgm("level3_bgm"); }
 
     // ─── 核心播放邏輯 ────────────────────────────────────
 

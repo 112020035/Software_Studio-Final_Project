@@ -1,5 +1,5 @@
 import Level3EnemyProjectile from "./Level3EnemyProjectile";
-
+import { AudioBroadcast } from "../Audio/AudioEvent";
 const { ccclass, property } = cc._decorator;
 
 @ccclass
@@ -130,7 +130,7 @@ export default class Level3EnemyShip extends cc.Component {
 
     private fireAt(playerWorld: cc.Vec2) {
         if (!this.projectilePrefab || !this.node.parent) return;
-
+        AudioBroadcast.playEffect('shotting');
         const projectileNode = cc.instantiate(this.projectilePrefab);
         this.node.parent.addChild(projectileNode);
 
