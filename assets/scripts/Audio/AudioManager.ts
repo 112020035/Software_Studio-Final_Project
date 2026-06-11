@@ -22,6 +22,7 @@ type AudioName =
     | "run_on_water"
     | "shotting"
     | "story_line_bgm"
+    | "vanish"
     | "warning"
     | "coin"
     | "bomb"
@@ -130,6 +131,7 @@ export default class AudioManager extends cc.Component {
     public run_on_ground(loop: boolean = true): void { this.playEffect("run_on_ground", loop); }
     public run_on_water(loop: boolean = true): void { this.playEffect("run_on_water", loop); }
     public shotting(): void { this.playEffect("shotting"); }
+    public vanish(): void { this.playEffect("vanish"); }
     public warning(): void { this.playEffect("warning"); }
     public coin(): void { this.playEffect("coin"); }
     public bomb(): void { this.playEffect("bomb"); }

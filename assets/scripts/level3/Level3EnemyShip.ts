@@ -108,6 +108,7 @@ export default class Level3EnemyShip extends cc.Component {
     }
 
     public takeDamage(amount: number) {
+        AudioBroadcast.playEffect('vanish');
         this.health -= Math.max(0, amount || 0);
         if (this.health <= 0 && this.node.isValid) {
             this.node.destroy();
