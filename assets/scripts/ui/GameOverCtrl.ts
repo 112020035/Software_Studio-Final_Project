@@ -1,5 +1,5 @@
 import GameData from "../gameflow/GameData";
-import AudioBroadcast from "../Audio/AudioBroadcast";
+import { AudioBroadcast } from "../Audio/AudioEvent";
 const { ccclass, property } = cc._decorator;
 
 @ccclass

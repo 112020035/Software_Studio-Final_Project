@@ -55,7 +55,7 @@ export default class ExploreCtrl extends cc.Component {
     private isPromptOpen: boolean = false;
 
     // 關閉 prompt 後的冷卻時間（秒），防止立即重新觸發
-    private readonly PROMPT_COOLDOWN = 3;
+    private readonly PROMPT_COOLDOWN = 2;
     private promptCooldownTimer: number = 0;
 
     // 私有方法：統一判斷翻轉狀態
