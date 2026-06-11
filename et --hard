@@ -1,0 +1,51 @@
+[33mfca6f36[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mbackpack[m[33m)[m Merge remote-tracking branch 'origin/level3_opt' into backpack
+[33ma8856d2[m highquality
+[33m2c6ac1a[m[33m ([m[1;31morigin/level3_opt[m[33m)[m Improve Level 3 combat and HUD flow
+[33m229b2fb[m Merge remote-tracking branch 'origin/backpack' into backpack
+[33m2b473bc[m add home
+[33m2270164[m[33m ([m[1;31morigin/backpack[m[33m)[m inventory加上玩家名稱、加game over bgm
+[33m17f219c[m 加音效
+[33m0f5afed[m new
+[33m7f90359[m Merge remote-tracking branch 'origin/login' into backpack
+[33mafa7e67[m Merge remote-tracking branch 'origin/level3_opt' into backpack
+[33m6a5714d[m Merge remote-tracking branch 'origin/login' into backpack
+[33m2dad5a4[m enemy vanish sound effect
+[33m2f40ed8[m level3 bgm+sound effect
+[33mf0b9ab5[m[33m ([m[1;31morigin/login[m[33m)[m login 最終版
+[33m45deef7[m before merge login
+[33m3951544[m login ver2
+[33m6d84767[m Merge remote-tracking branch 'origin/login' into backpack
+[33mefaf17d[m level3entry
+[33m63b8b57[m Login modify
+[33mb399974[m Merge remote-tracking branch 'origin/login' into backpack
+[33maee3d2c[m Level3 敵人生成、HUD 進度條、碰撞修正 push第二次
+[33mf83ca68[m Level3 敵人生成、HUD 進度條、碰撞修正
+[33m99dd84c[m Login scene做完，但一直無法連上firebase
+[33m7ebea4d[m levelresult & backpack
+[33m871c6cb[m mergelevel2 to level3-dev
+[33m95aeb11[m[33m ([m[1;31morigin/level3-dev[m[33m)[m 	new file:   assets/img/button/Slider.png 	new file:   assets/img/button/Slider.png.meta 	modified:   assets/scenes/Setting.fire 	modified:   assets/scripts/ui/MainMenuCtrl.ts 	modified:   assets/scripts/ui/SettingCtrl.ts 	modified:   settings/project.json
+[33m3503374[m Remove TODO folder
+[33mb28fd1e[m Add level3 spaceship system
+[33m6ea8a1a[m[33m ([m[1;32mmergelevel2[m[33m)[m setting
+[33mfb42434[m Audio
+[33m41c7a8d[m some modify
+[33mec8dcd6[m 主遊戲音效處理完成
+[33mff6abac[m 解決衝突
+[33mc5a0019[m 儲存目前進度
+[33m2b9cad0[m repair explore
+[33m7e8b7d0[m 新增AudioEvent
+[33m5e877d1[m 加入Menu,Intro,Level2的bgm，用Audiomanager管理
+[33mbc76b2a[m Update files
+[33mda144c5[m[33m ([m[1;32mmain[m[33m)[m erge
+[33meecfcfc[m Merge remote-tracking branch 'origin/feature/level2-part2-integration'
+[33mf400bc0[m before merge
+[33m255ce36[m[33m ([m[1;31morigin/feature/level2-part2-integration[m[33m)[m Add Level2 coin and document gameplay scripts
+[33mb36c1c2[m Integrate Level2 part two gameplay
+[33m428505d[m Merge remote-tracking branch 'origin/update_imgs' update_imgs
+[33md2bddff[m[33m ([m[1;31morigin/update_imgs[m[33m)[m 你的commit訊息
+[33m330afdc[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Update level2 gameplay
+[33md4d9afc[m Merge remote-tracking branch 'origin/update_imgs'
+[33mfe4a863[m level2
+[33m44b4735[m update images
+[33m2dd17da[m[33m ([m[1;31morigin/integrate-level2[m[33m)[m Integrate Level2 scene
+[33ma214194[m init
