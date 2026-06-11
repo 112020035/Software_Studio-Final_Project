@@ -5,6 +5,7 @@ const { ccclass, property } = cc._decorator;
 @ccclass
 export default class GameOverCtrl extends cc.Component {
     start() {
+        AudioBroadcast.playBgm("failure_bgm");
         this.bindButton("Canvas/RetryButton", "onRetry");
         this.bindButton("Canvas/BackButton", "onBack");
     }

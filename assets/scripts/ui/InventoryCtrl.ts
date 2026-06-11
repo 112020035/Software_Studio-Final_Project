@@ -11,6 +11,7 @@ export default class InventoryCtrl extends cc.Component {
     @property(cc.Sprite) part1: cc.Sprite = null;
     @property(cc.Sprite) part2: cc.Sprite = null;
     @property(cc.Sprite) part3: cc.Sprite = null;
+    @property(cc.Label)  playerNameLabel: cc.Label = null;
 
     // 順序同 LevelResultCtrl：[道具0瑕疵, 道具0一般, 道具0最佳, 道具1瑕疵, ...]
     @property([cc.SpriteFrame])
@@ -20,6 +21,12 @@ export default class InventoryCtrl extends cc.Component {
         AudioBroadcast.playBgm("inventory_bgm");
         if (this.itemCountLabel) {
             this.itemCountLabel.string = `已收集道具：${GameData.itemCount}`;
+        }
+        // @ts-ignore
+        const user = firebase.auth().currentUser;
+        
+        if (user && this.playerNameLabel) {
+            this.playerNameLabel.string = user.displayName || user.email;
         }
 
         const parts = [this.part1, this.part2, this.part3];
