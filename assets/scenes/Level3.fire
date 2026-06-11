@@ -17,7 +17,7 @@
         "__id__": 2
       },
       {
-        "__id__": 23
+        "__id__": 24
       },
       {
         "__id__": 6
@@ -26,22 +26,10 @@
         "__id__": 19
       },
       {
-        "__id__": 56
-      },
-      {
         "__id__": 57
       },
       {
-        "__id__": 59
-      },
-      {
-        "__id__": 63
-      },
-      {
-        "__id__": 67
-      },
-      {
-        "__id__": 71
+        "__id__": 58
       }
     ],
     "_active": true,
@@ -109,6 +97,9 @@
       },
       {
         "__id__": 22
+      },
+      {
+        "__id__": 23
       }
     ],
     "_prefab": null,
@@ -297,6 +288,7 @@
     "maxX": 99999,
     "minY": -99999,
     "maxY": 99999,
+    "maxShakeStrength": 20,
     "_id": "66LKYk+FNHU7/DPlE9Wffw"
   },
   {
@@ -908,6 +900,8 @@
     "deceleration": 1100,
     "minX": 40,
     "maxX": 1880,
+    "minY": 40,
+    "maxY": 7200,
     "altitudeSpeed": 0.75,
     "farScaleMultiplier": 0.65,
     "nearScaleMultiplier": 1.5,
@@ -934,10 +928,11 @@
     "maxStamina": 100,
     "staminaDrainPerSecond": 10,
     "staminaRegenPerSecond": 32,
-    "staminaDrainSpeedRatio": 0.75,
+    "staminaDrainSpeedRatio": 0.45,
+    "staminaSlowdownThreshold": 0.25,
     "staminaRecoveryThreshold": 0.2,
-    "maxAmmo": 8,
-    "ammoRegenPerSecond": 0.25,
+    "maxAmmo": 16,
+    "ammoRegenPerSecond": 1,
     "maxShield": 4,
     "shieldRegenDelay": 3,
     "shieldChargeRegenInterval": 5,
@@ -971,6 +966,10 @@
     "bulletLifetime": 2.5,
     "bulletDamage": 1,
     "bulletScale": 1,
+    "explosionFrames": [],
+    "explosionFramesPerSecond": 10,
+    "explosionScale": 0.28,
+    "explosionRadius": 150,
     "fireCooldown": 0.12,
     "initialPoolSize": 20,
     "logPoolStats": true,
@@ -1116,6 +1115,68 @@
     "shieldBarFill": {
       "__uuid__": "35e7f09e-6046-4db0-ac90-70dbddb5e756"
     },
+    "enemyKillIconFrames": [
+      {
+        "__uuid__": "56d38c0c-cb19-487e-8257-aa33c63f5c58"
+      },
+      {
+        "__uuid__": "27c3f505-491c-4a12-964d-32a4046640df"
+      },
+      {
+        "__uuid__": "e11fc617-b64c-4c88-aa88-b31cd8ce6744"
+      },
+      {
+        "__uuid__": "b418b292-69cb-4d2b-99f5-ec20654462b2"
+      }
+    ],
+    "killDigitFrames": [
+      {
+        "__uuid__": "e61dfe5c-8e1d-46f6-95ad-35769aa322bd"
+      },
+      {
+        "__uuid__": "cd706337-ae92-4c34-adfb-9c92785f8c39"
+      },
+      {
+        "__uuid__": "a23c684e-f188-401b-a92b-bfd2ebea08b2"
+      },
+      {
+        "__uuid__": "602da24a-0344-4ad1-be0f-cb82c2b10b67"
+      },
+      {
+        "__uuid__": "64e6b3a0-03ce-4dfd-b8ea-4016ea91dc03"
+      },
+      {
+        "__uuid__": "956384e2-9055-4efc-95f8-9988125eba16"
+      },
+      {
+        "__uuid__": "5459998c-d334-4166-9cdc-8f6d67b35d59"
+      },
+      {
+        "__uuid__": "183f5ff6-c53d-47ba-af2a-addf815f1d15"
+      },
+      {
+        "__uuid__": "a72b9449-7ad7-4e8f-ada2-b85b595faa86"
+      },
+      {
+        "__uuid__": "044b0714-6604-4999-bc86-a5e648e4c586"
+      }
+    ],
+    "killMultiplyFrame": {
+      "__uuid__": "236f4ec2-8672-418c-a4b5-8f2e075971d0"
+    },
+    "enemyScoreValues": [
+      100,
+      200,
+      300,
+      400
+    ],
+    "killRightMargin": 24,
+    "killTopMargin": 24,
+    "killRowGap": 62,
+    "killIconSize": 48,
+    "killDigitWidth": 22,
+    "killDigitHeight": 28,
+    "killDigitGap": 2,
     "leftMargin": 24,
     "topMargin": 24,
     "barWidth": 150,
@@ -1126,6 +1187,46 @@
     "_id": "33RmwmB6VCrL3f39J2TSCW"
   },
   {
+    "__type__": "24f4arZJSVHcJuIlFwmloYy",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 2
+    },
+    "_enabled": true,
+    "player": {
+      "__id__": 6
+    },
+    "goalY": 7000,
+    "gameDuration": 180,
+    "barMarginX": 80,
+    "barMarginBottom": 50,
+    "tickHeight": 12,
+    "playerTriSize": 10,
+    "enemyTriSize": 7,
+    "timerBarGap": 12,
+    "timerBarThickness": 8,
+    "enemyPrefabs": [
+      {
+        "__uuid__": "d813f845-78ef-48a7-a1cf-40f83dd86920"
+      },
+      {
+        "__uuid__": "961e9858-1680-4f4e-af69-2eeb45f939de"
+      },
+      {
+        "__uuid__": "ad05baff-e051-4572-874f-81d9fa487f68"
+      },
+      {
+        "__uuid__": "a0804b33-6994-4095-9b46-cdf90307cf2d"
+      }
+    ],
+    "spawnMinX": 80,
+    "spawnMaxX": 1840,
+    "spawnInterval": 10,
+    "maxEnemies": 6,
+    "_id": "28dkmcnilJtIv+CLARTVGZ"
+  },
+  {
     "__type__": "cc.Node",
     "_name": "Background",
     "_objFlags": 0,
@@ -1134,52 +1235,52 @@
     },
     "_children": [
       {
-        "__id__": 24
+        "__id__": 25
       },
       {
-        "__id__": 26
+        "__id__": 27
       },
       {
-        "__id__": 28
+        "__id__": 29
       },
       {
-        "__id__": 30
+        "__id__": 31
       },
       {
-        "__id__": 32
+        "__id__": 33
       },
       {
-        "__id__": 34
+        "__id__": 35
       },
       {
-        "__id__": 36
+        "__id__": 37
       },
       {
-        "__id__": 38
+        "__id__": 39
       },
       {
-        "__id__": 40
+        "__id__": 41
       },
       {
-        "__id__": 42
+        "__id__": 43
       },
       {
-        "__id__": 44
+        "__id__": 45
       },
       {
-        "__id__": 46
+        "__id__": 47
       },
       {
-        "__id__": 48
+        "__id__": 49
       },
       {
-        "__id__": 50
+        "__id__": 51
       },
       {
-        "__id__": 52
+        "__id__": 53
       },
       {
-        "__id__": 54
+        "__id__": 55
       }
     ],
     "_active": true,
@@ -1237,13 +1338,13 @@
     "_name": "Space Background",
     "_objFlags": 0,
     "_parent": {
-      "__id__": 23
+      "__id__": 24
     },
     "_children": [],
     "_active": true,
     "_components": [
       {
-        "__id__": 25
+        "__id__": 26
       }
     ],
     "_prefab": null,
@@ -1299,7 +1400,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 24
+      "__id__": 25
     },
     "_enabled": true,
     "_materials": [
@@ -1331,13 +1432,13 @@
     "_name": "Space Background",
     "_objFlags": 0,
     "_parent": {
-      "__id__": 23
+      "__id__": 24
     },
     "_children": [],
     "_active": true,
     "_components": [
       {
-        "__id__": 27
+        "__id__": 28
       }
     ],
     "_prefab": null,
@@ -1393,7 +1494,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 26
+      "__id__": 27
     },
     "_enabled": true,
     "_materials": [
@@ -1425,13 +1526,13 @@
     "_name": "Space Background",
     "_objFlags": 0,
     "_parent": {
-      "__id__": 23
+      "__id__": 24
     },
     "_children": [],
     "_active": true,
     "_components": [
       {
-        "__id__": 29
+        "__id__": 30
       }
     ],
     "_prefab": null,
@@ -1487,7 +1588,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 28
+      "__id__": 29
     },
     "_enabled": true,
     "_materials": [
@@ -1519,13 +1620,13 @@
     "_name": "Space Background",
     "_objFlags": 0,
     "_parent": {
-      "__id__": 23
+      "__id__": 24
     },
     "_children": [],
     "_active": true,
     "_components": [
       {
-        "__id__": 31
+        "__id__": 32
       }
     ],
     "_prefab": null,
@@ -1581,7 +1682,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 30
+      "__id__": 31
     },
     "_enabled": true,
     "_materials": [
@@ -1613,13 +1714,13 @@
     "_name": "Space Background",
     "_objFlags": 0,
     "_parent": {
-      "__id__": 23
+      "__id__": 24
     },
     "_children": [],
     "_active": true,
     "_components": [
       {
-        "__id__": 33
+        "__id__": 34
       }
     ],
     "_prefab": null,
@@ -1675,7 +1776,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 32
+      "__id__": 33
     },
     "_enabled": true,
     "_materials": [
@@ -1707,13 +1808,13 @@
     "_name": "Space Background",
     "_objFlags": 0,
     "_parent": {
-      "__id__": 23
+      "__id__": 24
     },
     "_children": [],
     "_active": true,
     "_components": [
       {
-        "__id__": 35
+        "__id__": 36
       }
     ],
     "_prefab": null,
@@ -1769,7 +1870,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 34
+      "__id__": 35
     },
     "_enabled": true,
     "_materials": [
@@ -1801,13 +1902,13 @@
     "_name": "Space Background",
     "_objFlags": 0,
     "_parent": {
-      "__id__": 23
+      "__id__": 24
     },
     "_children": [],
     "_active": true,
     "_components": [
       {
-        "__id__": 37
+        "__id__": 38
       }
     ],
     "_prefab": null,
@@ -1863,7 +1964,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 36
+      "__id__": 37
     },
     "_enabled": true,
     "_materials": [
@@ -1895,13 +1996,13 @@
     "_name": "Space Background",
     "_objFlags": 0,
     "_parent": {
-      "__id__": 23
+      "__id__": 24
     },
     "_children": [],
     "_active": true,
     "_components": [
       {
-        "__id__": 39
+        "__id__": 40
       }
     ],
     "_prefab": null,
@@ -1957,7 +2058,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 38
+      "__id__": 39
     },
     "_enabled": true,
     "_materials": [
@@ -1989,13 +2090,13 @@
     "_name": "Space Background",
     "_objFlags": 0,
     "_parent": {
-      "__id__": 23
+      "__id__": 24
     },
     "_children": [],
     "_active": true,
     "_components": [
       {
-        "__id__": 41
+        "__id__": 42
       }
     ],
     "_prefab": null,
@@ -2051,7 +2152,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 40
+      "__id__": 41
     },
     "_enabled": true,
     "_materials": [
@@ -2083,13 +2184,13 @@
     "_name": "Space Background",
     "_objFlags": 0,
     "_parent": {
-      "__id__": 23
+      "__id__": 24
     },
     "_children": [],
     "_active": true,
     "_components": [
       {
-        "__id__": 43
+        "__id__": 44
       }
     ],
     "_prefab": null,
@@ -2145,7 +2246,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 42
+      "__id__": 43
     },
     "_enabled": true,
     "_materials": [
@@ -2177,13 +2278,13 @@
     "_name": "Space Background",
     "_objFlags": 0,
     "_parent": {
-      "__id__": 23
+      "__id__": 24
     },
     "_children": [],
     "_active": true,
     "_components": [
       {
-        "__id__": 45
+        "__id__": 46
       }
     ],
     "_prefab": null,
@@ -2239,7 +2340,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 44
+      "__id__": 45
     },
     "_enabled": true,
     "_materials": [
@@ -2271,13 +2372,13 @@
     "_name": "Space Background",
     "_objFlags": 0,
     "_parent": {
-      "__id__": 23
+      "__id__": 24
     },
     "_children": [],
     "_active": true,
     "_components": [
       {
-        "__id__": 47
+        "__id__": 48
       }
     ],
     "_prefab": null,
@@ -2333,7 +2434,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 46
+      "__id__": 47
     },
     "_enabled": true,
     "_materials": [
@@ -2365,13 +2466,13 @@
     "_name": "Space Background",
     "_objFlags": 0,
     "_parent": {
-      "__id__": 23
+      "__id__": 24
     },
     "_children": [],
     "_active": true,
     "_components": [
       {
-        "__id__": 49
+        "__id__": 50
       }
     ],
     "_prefab": null,
@@ -2427,7 +2528,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 48
+      "__id__": 49
     },
     "_enabled": true,
     "_materials": [
@@ -2459,13 +2560,13 @@
     "_name": "Space Background",
     "_objFlags": 0,
     "_parent": {
-      "__id__": 23
+      "__id__": 24
     },
     "_children": [],
     "_active": true,
     "_components": [
       {
-        "__id__": 51
+        "__id__": 52
       }
     ],
     "_prefab": null,
@@ -2521,7 +2622,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 50
+      "__id__": 51
     },
     "_enabled": true,
     "_materials": [
@@ -2553,13 +2654,13 @@
     "_name": "Space Background",
     "_objFlags": 0,
     "_parent": {
-      "__id__": 23
+      "__id__": 24
     },
     "_children": [],
     "_active": true,
     "_components": [
       {
-        "__id__": 53
+        "__id__": 54
       }
     ],
     "_prefab": null,
@@ -2615,7 +2716,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 52
+      "__id__": 53
     },
     "_enabled": true,
     "_materials": [
@@ -2647,13 +2748,13 @@
     "_name": "Space Background",
     "_objFlags": 0,
     "_parent": {
-      "__id__": 23
+      "__id__": 24
     },
     "_children": [],
     "_active": true,
     "_components": [
       {
-        "__id__": 55
+        "__id__": 56
       }
     ],
     "_prefab": null,
@@ -2709,7 +2810,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 54
+      "__id__": 55
     },
     "_enabled": true,
     "_materials": [
@@ -2805,7 +2906,7 @@
     "_active": true,
     "_components": [
       {
-        "__id__": 58
+        "__id__": 59
       }
     ],
     "_prefab": null,
@@ -2861,14 +2962,14 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 57
+      "__id__": 58
     },
     "_enabled": true,
     "player": {
       "__id__": 6
     },
     "obstacleLayer": {
-      "__id__": 56
+      "__id__": 57
     },
     "planetPrefabs": [
       {
@@ -2921,529 +3022,5 @@
     "initialPoolSizePerPrefab": 1,
     "logGeneration": true,
     "_id": "f2yiBMl7ZGSo7LAIjkAT0p"
-  },
-  {
-    "__type__": "cc.Node",
-    "_name": "EnemyShip0007",
-    "_objFlags": 0,
-    "_parent": {
-      "__id__": 1
-    },
-    "_children": [],
-    "_active": true,
-    "_components": [
-      {
-        "__id__": 60
-      },
-      {
-        "__id__": 61
-      }
-    ],
-    "_prefab": {
-      "__id__": 62
-    },
-    "_opacity": 255,
-    "_color": {
-      "__type__": "cc.Color",
-      "r": 255,
-      "g": 255,
-      "b": 255,
-      "a": 255
-    },
-    "_contentSize": {
-      "__type__": "cc.Size",
-      "width": 28,
-      "height": 23
-    },
-    "_anchorPoint": {
-      "__type__": "cc.Vec2",
-      "x": 0.5,
-      "y": 0.5
-    },
-    "_trs": {
-      "__type__": "TypedArray",
-      "ctor": "Float64Array",
-      "array": [
-        562.018,
-        1335.679,
-        0,
-        0,
-        0,
-        0,
-        1,
-        2.55,
-        2.55,
-        1
-      ]
-    },
-    "_eulerAngles": {
-      "__type__": "cc.Vec3",
-      "x": 0,
-      "y": 0,
-      "z": 0
-    },
-    "_skewX": 0,
-    "_skewY": 0,
-    "_is3DNode": false,
-    "_groupIndex": 0,
-    "groupIndex": 0,
-    "_id": "defQ6gBZlGQY5z9gwVlegE"
-  },
-  {
-    "__type__": "cc.Sprite",
-    "_name": "",
-    "_objFlags": 0,
-    "node": {
-      "__id__": 59
-    },
-    "_enabled": true,
-    "_materials": [
-      {
-        "__uuid__": "eca5d2f2-8ef6-41c2-bbe6-f9c79d09c432"
-      }
-    ],
-    "_srcBlendFactor": 770,
-    "_dstBlendFactor": 771,
-    "_spriteFrame": {
-      "__uuid__": "b418b292-69cb-4d2b-99f5-ec20654462b2"
-    },
-    "_type": 0,
-    "_sizeMode": 1,
-    "_fillType": 0,
-    "_fillCenter": {
-      "__type__": "cc.Vec2",
-      "x": 0,
-      "y": 0
-    },
-    "_fillStart": 0,
-    "_fillRange": 0,
-    "_isTrimmedMode": true,
-    "_atlas": null,
-    "_id": "0bKnPJh0pEI4/fOTZeVWgB"
-  },
-  {
-    "__type__": "77f4eXK83pIxI5wVjlZ9aCe",
-    "_name": "",
-    "_objFlags": 0,
-    "node": {
-      "__id__": 59
-    },
-    "_enabled": true,
-    "maxHealth": 1,
-    "moveSpeed": 100,
-    "attackRange": 300,
-    "preferredDistance": 240,
-    "fireInterval": 1.45,
-    "contactDamage": 1,
-    "collisionRadius": 8,
-    "projectilePrefab": {
-      "__uuid__": "7908a8e4-ce4c-4998-9162-49c895208bb3"
-    },
-    "firePoint": null,
-    "_id": "c9EmAhhxVFRrvUv2cd3ZpG"
-  },
-  {
-    "__type__": "cc.PrefabInfo",
-    "root": {
-      "__id__": 59
-    },
-    "asset": {
-      "__uuid__": "a0804b33-6994-4095-9b46-cdf90307cf2d"
-    },
-    "fileId": "",
-    "sync": false
-  },
-  {
-    "__type__": "cc.Node",
-    "_name": "EnemyShip0006",
-    "_objFlags": 0,
-    "_parent": {
-      "__id__": 1
-    },
-    "_children": [],
-    "_active": true,
-    "_components": [
-      {
-        "__id__": 64
-      },
-      {
-        "__id__": 65
-      }
-    ],
-    "_prefab": {
-      "__id__": 66
-    },
-    "_opacity": 255,
-    "_color": {
-      "__type__": "cc.Color",
-      "r": 255,
-      "g": 255,
-      "b": 255,
-      "a": 255
-    },
-    "_contentSize": {
-      "__type__": "cc.Size",
-      "width": 22,
-      "height": 18
-    },
-    "_anchorPoint": {
-      "__type__": "cc.Vec2",
-      "x": 0.5,
-      "y": 0.5
-    },
-    "_trs": {
-      "__type__": "TypedArray",
-      "ctor": "Float64Array",
-      "array": [
-        1330.805,
-        1957.167,
-        0,
-        0,
-        0,
-        0,
-        1,
-        2.325,
-        2.325,
-        1
-      ]
-    },
-    "_eulerAngles": {
-      "__type__": "cc.Vec3",
-      "x": 0,
-      "y": 0,
-      "z": 0
-    },
-    "_skewX": 0,
-    "_skewY": 0,
-    "_is3DNode": false,
-    "_groupIndex": 0,
-    "groupIndex": 0,
-    "_id": "0aFXZoLqZDorYREWuLNYXI"
-  },
-  {
-    "__type__": "cc.Sprite",
-    "_name": "",
-    "_objFlags": 0,
-    "node": {
-      "__id__": 63
-    },
-    "_enabled": true,
-    "_materials": [
-      {
-        "__uuid__": "eca5d2f2-8ef6-41c2-bbe6-f9c79d09c432"
-      }
-    ],
-    "_srcBlendFactor": 770,
-    "_dstBlendFactor": 771,
-    "_spriteFrame": {
-      "__uuid__": "e11fc617-b64c-4c88-aa88-b31cd8ce6744"
-    },
-    "_type": 0,
-    "_sizeMode": 1,
-    "_fillType": 0,
-    "_fillCenter": {
-      "__type__": "cc.Vec2",
-      "x": 0,
-      "y": 0
-    },
-    "_fillStart": 0,
-    "_fillRange": 0,
-    "_isTrimmedMode": true,
-    "_atlas": null,
-    "_id": "abUmQm1PJPaqPrFAQQlXEl"
-  },
-  {
-    "__type__": "77f4eXK83pIxI5wVjlZ9aCe",
-    "_name": "",
-    "_objFlags": 0,
-    "node": {
-      "__id__": 63
-    },
-    "_enabled": true,
-    "maxHealth": 1,
-    "moveSpeed": 90,
-    "attackRange": 250,
-    "preferredDistance": 240,
-    "fireInterval": 1.25,
-    "contactDamage": 1,
-    "collisionRadius": 8,
-    "projectilePrefab": {
-      "__uuid__": "a031623a-0ee1-40e4-89c2-59392e28f246"
-    },
-    "firePoint": null,
-    "_id": "2acyuRKjJG762BwlCKy3Hl"
-  },
-  {
-    "__type__": "cc.PrefabInfo",
-    "root": {
-      "__id__": 63
-    },
-    "asset": {
-      "__uuid__": "ad05baff-e051-4572-874f-81d9fa487f68"
-    },
-    "fileId": "",
-    "sync": false
-  },
-  {
-    "__type__": "cc.Node",
-    "_name": "EnemyShip0001",
-    "_objFlags": 0,
-    "_parent": {
-      "__id__": 1
-    },
-    "_children": [],
-    "_active": true,
-    "_components": [
-      {
-        "__id__": 68
-      },
-      {
-        "__id__": 69
-      }
-    ],
-    "_prefab": {
-      "__id__": 70
-    },
-    "_opacity": 255,
-    "_color": {
-      "__type__": "cc.Color",
-      "r": 255,
-      "g": 255,
-      "b": 255,
-      "a": 255
-    },
-    "_contentSize": {
-      "__type__": "cc.Size",
-      "width": 30,
-      "height": 24
-    },
-    "_anchorPoint": {
-      "__type__": "cc.Vec2",
-      "x": 0.5,
-      "y": 0.5
-    },
-    "_trs": {
-      "__type__": "TypedArray",
-      "ctor": "Float64Array",
-      "array": [
-        355.494,
-        2517.91,
-        0,
-        0,
-        0,
-        0,
-        1,
-        4.05,
-        4.05,
-        1
-      ]
-    },
-    "_eulerAngles": {
-      "__type__": "cc.Vec3",
-      "x": 0,
-      "y": 0,
-      "z": 0
-    },
-    "_skewX": 0,
-    "_skewY": 0,
-    "_is3DNode": false,
-    "_groupIndex": 0,
-    "groupIndex": 0,
-    "_id": "a5AAGZX3pLs72BP+0h8R4P"
-  },
-  {
-    "__type__": "cc.Sprite",
-    "_name": "",
-    "_objFlags": 0,
-    "node": {
-      "__id__": 67
-    },
-    "_enabled": true,
-    "_materials": [
-      {
-        "__uuid__": "eca5d2f2-8ef6-41c2-bbe6-f9c79d09c432"
-      }
-    ],
-    "_srcBlendFactor": 770,
-    "_dstBlendFactor": 771,
-    "_spriteFrame": {
-      "__uuid__": "27c3f505-491c-4a12-964d-32a4046640df"
-    },
-    "_type": 0,
-    "_sizeMode": 1,
-    "_fillType": 0,
-    "_fillCenter": {
-      "__type__": "cc.Vec2",
-      "x": 0,
-      "y": 0
-    },
-    "_fillStart": 0,
-    "_fillRange": 0,
-    "_isTrimmedMode": true,
-    "_atlas": null,
-    "_id": "85hvq9MmFEC4jTevnynUFL"
-  },
-  {
-    "__type__": "77f4eXK83pIxI5wVjlZ9aCe",
-    "_name": "",
-    "_objFlags": 0,
-    "node": {
-      "__id__": 67
-    },
-    "_enabled": true,
-    "maxHealth": 3,
-    "moveSpeed": 70,
-    "attackRange": 400,
-    "preferredDistance": 240,
-    "fireInterval": 2.2,
-    "contactDamage": 1,
-    "collisionRadius": 11,
-    "projectilePrefab": {
-      "__uuid__": "8e350895-995c-42fd-a53b-8a66c22cfdb5"
-    },
-    "firePoint": null,
-    "_id": "aeoEdPQ9JJxohJEjJjfXE7"
-  },
-  {
-    "__type__": "cc.PrefabInfo",
-    "root": {
-      "__id__": 67
-    },
-    "asset": {
-      "__uuid__": "961e9858-1680-4f4e-af69-2eeb45f939de"
-    },
-    "fileId": "",
-    "sync": false
-  },
-  {
-    "__type__": "cc.Node",
-    "_name": "EnemyShip0000",
-    "_objFlags": 0,
-    "_parent": {
-      "__id__": 1
-    },
-    "_children": [],
-    "_active": true,
-    "_components": [
-      {
-        "__id__": 72
-      },
-      {
-        "__id__": 73
-      }
-    ],
-    "_prefab": {
-      "__id__": 74
-    },
-    "_opacity": 255,
-    "_color": {
-      "__type__": "cc.Color",
-      "r": 255,
-      "g": 255,
-      "b": 255,
-      "a": 255
-    },
-    "_contentSize": {
-      "__type__": "cc.Size",
-      "width": 32,
-      "height": 24
-    },
-    "_anchorPoint": {
-      "__type__": "cc.Vec2",
-      "x": 0.5,
-      "y": 0.5
-    },
-    "_trs": {
-      "__type__": "TypedArray",
-      "ctor": "Float64Array",
-      "array": [
-        1541.18,
-        580.15,
-        0,
-        0,
-        0,
-        0,
-        1,
-        3.6,
-        3.6,
-        1
-      ]
-    },
-    "_eulerAngles": {
-      "__type__": "cc.Vec3",
-      "x": 0,
-      "y": 0,
-      "z": 0
-    },
-    "_skewX": 0,
-    "_skewY": 0,
-    "_is3DNode": false,
-    "_groupIndex": 0,
-    "groupIndex": 0,
-    "_id": "171n1jk8JPOZYAQBtLn728"
-  },
-  {
-    "__type__": "cc.Sprite",
-    "_name": "",
-    "_objFlags": 0,
-    "node": {
-      "__id__": 71
-    },
-    "_enabled": true,
-    "_materials": [
-      {
-        "__uuid__": "eca5d2f2-8ef6-41c2-bbe6-f9c79d09c432"
-      }
-    ],
-    "_srcBlendFactor": 770,
-    "_dstBlendFactor": 771,
-    "_spriteFrame": {
-      "__uuid__": "56d38c0c-cb19-487e-8257-aa33c63f5c58"
-    },
-    "_type": 0,
-    "_sizeMode": 1,
-    "_fillType": 0,
-    "_fillCenter": {
-      "__type__": "cc.Vec2",
-      "x": 0,
-      "y": 0
-    },
-    "_fillStart": 0,
-    "_fillRange": 0,
-    "_isTrimmedMode": true,
-    "_atlas": null,
-    "_id": "c9kCkVtJVKZLCUZxQFJlTn"
-  },
-  {
-    "__type__": "77f4eXK83pIxI5wVjlZ9aCe",
-    "_name": "",
-    "_objFlags": 0,
-    "node": {
-      "__id__": 71
-    },
-    "_enabled": true,
-    "maxHealth": 2,
-    "moveSpeed": 50,
-    "attackRange": 350,
-    "preferredDistance": 240,
-    "fireInterval": 1.8,
-    "contactDamage": 1,
-    "collisionRadius": 11,
-    "projectilePrefab": {
-      "__uuid__": "0124493d-3718-4b91-8ef9-57c51e349297"
-    },
-    "firePoint": null,
-    "_id": "031HAAvWxDRo3KGVNAmF6L"
-  },
-  {
-    "__type__": "cc.PrefabInfo",
-    "root": {
-      "__id__": 71
-    },
-    "asset": {
-      "__uuid__": "d813f845-78ef-48a7-a1cf-40f83dd86920"
-    },
-    "fileId": "",
-    "sync": false
   }
 ]

@@ -1,4 +1,5 @@
 const { ccclass, property } = cc._decorator;
+import Level3PlanetObstacle from "./Level3PlanetObstacle";
 
 @ccclass
 export default class Level3EnemyProjectile extends cc.Component {
@@ -14,9 +15,27 @@ export default class Level3EnemyProjectile extends cc.Component {
     @property
     collisionRadius = 5;
 
+    @property([cc.SpriteFrame])
+    explosionFrames: cc.SpriteFrame[] = [];
+
+    @property
+    explosionFps = 10;
+
+    @property
+    explosionScale = 0.12;
+
+    @property
+    cameraShakeStrength = 8;
+
+    @property
+    cameraShakeDuration = 0.22;
+
     private velocity = cc.v2();
     private elapsed = 0;
     private launched = false;
+    private exploding = false;
+    private explosionElapsed = 0;
+    private explosionFrameIndex = 0;
     private playerNode: cc.Node = null;
 
     onLoad() {
@@ -38,6 +57,11 @@ export default class Level3EnemyProjectile extends cc.Component {
     }
 
     update(dt: number) {
+        if (this.exploding) {
+            this.updateExplosion(dt);
+            return;
+        }
+
         if (!this.launched) return;
 
         this.elapsed += dt;
@@ -46,8 +70,12 @@ export default class Level3EnemyProjectile extends cc.Component {
             return;
         }
 
+        const previousWorld = this.node.convertToWorldSpaceAR(cc.Vec2.ZERO);
         this.node.x += this.velocity.x * dt;
         this.node.y += this.velocity.y * dt;
+        const currentWorld = this.node.convertToWorldSpaceAR(cc.Vec2.ZERO);
+
+        if (this.tryHitPlanet(previousWorld, currentWorld)) return;
 
         if (!this.playerNode || !this.playerNode.isValid) {
             this.playerNode = cc.find("Player");
@@ -82,12 +110,17 @@ export default class Level3EnemyProjectile extends cc.Component {
             }
         }
 
-        this.launched = false;
-        this.node.destroy();
+        this.startExplosion();
     }
 
     onCollisionEnter(other: cc.Collider) {
         if (!this.launched || !other || !other.node) return;
+
+        if (other.node.getComponent(Level3PlanetObstacle)) {
+            this.startExplosion();
+            return;
+        }
+
         if (other.node.group !== "Player") return;
 
         const components = other.node.getComponents(cc.Component);
@@ -99,8 +132,138 @@ export default class Level3EnemyProjectile extends cc.Component {
             }
         }
 
+        this.startExplosion();
+    }
+
+    private tryHitPlanet(start: cc.Vec2, end: cc.Vec2): boolean {
+        let closestT = Number.POSITIVE_INFINITY;
+
+        Level3PlanetObstacle.activeObstacles.forEach(obstacle => {
+            if (
+                !obstacle
+                || !obstacle.node
+                || !obstacle.node.isValid
+                || !obstacle.node.activeInHierarchy
+            ) {
+                return;
+            }
+
+            const center = obstacle.node.convertToWorldSpaceAR(cc.Vec2.ZERO);
+            const obstacleScale = Math.max(
+                Math.abs(obstacle.node.scaleX),
+                Math.abs(obstacle.node.scaleY)
+            );
+            const projectileScale = Math.max(
+                Math.abs(this.node.scaleX),
+                Math.abs(this.node.scaleY)
+            );
+            const radius = obstacle.collisionRadius * obstacleScale
+                + this.collisionRadius * projectileScale;
+            const hitT = this.getSegmentCircleHitT(
+                start,
+                end,
+                center,
+                radius
+            );
+
+            if (hitT !== null && hitT < closestT) {
+                closestT = hitT;
+            }
+        });
+
+        if (!isFinite(closestT)) return false;
+
+        const impactWorld = start.add(end.sub(start).mul(closestT));
+        if (this.node.parent) {
+            this.node.setPosition(
+                this.node.parent.convertToNodeSpaceAR(impactWorld)
+            );
+        }
+        this.startExplosion();
+        return true;
+    }
+
+    private getSegmentCircleHitT(
+        start: cc.Vec2,
+        end: cc.Vec2,
+        center: cc.Vec2,
+        radius: number
+    ): number | null {
+        const segment = end.sub(start);
+        const fromCenter = start.sub(center);
+        const a = segment.magSqr();
+
+        if (a <= 0.000001) {
+            return fromCenter.magSqr() <= radius * radius ? 0 : null;
+        }
+
+        const b = 2 * fromCenter.dot(segment);
+        const c = fromCenter.magSqr() - radius * radius;
+        if (c <= 0) return 0;
+
+        const discriminant = b * b - 4 * a * c;
+        if (discriminant < 0) return null;
+
+        const root = Math.sqrt(discriminant);
+        const nearT = (-b - root) / (2 * a);
+        const farT = (-b + root) / (2 * a);
+
+        if (nearT >= 0 && nearT <= 1) return nearT;
+        if (farT >= 0 && farT <= 1) return farT;
+        return null;
+    }
+
+    private startExplosion() {
+        if (this.exploding) return;
+
         this.launched = false;
-        this.node.destroy();
+        this.exploding = true;
+        this.explosionElapsed = 0;
+        this.explosionFrameIndex = 0;
+        this.velocity = cc.v2();
+        cc.director.emit(
+            "level3-camera-shake",
+            this.cameraShakeStrength,
+            this.cameraShakeDuration
+        );
+
+        const collider = this.getComponent(cc.CircleCollider);
+        if (collider) collider.enabled = false;
+
+        const sprite = this.getComponent(cc.Sprite);
+        if (!sprite || this.explosionFrames.length === 0) {
+            this.node.destroy();
+            return;
+        }
+
+        this.node.angle = 0;
+        this.node.scale = this.explosionScale;
+        sprite.spriteFrame = this.explosionFrames[0];
+    }
+
+    private updateExplosion(dt: number) {
+        const sprite = this.getComponent(cc.Sprite);
+        if (!sprite || this.explosionFrames.length === 0) {
+            this.node.destroy();
+            return;
+        }
+
+        this.explosionElapsed += dt;
+        const frameDuration = 1 / Math.max(1, this.explosionFps);
+
+        while (this.explosionElapsed >= frameDuration) {
+            this.explosionElapsed -= frameDuration;
+            this.explosionFrameIndex += 1;
+
+            if (this.explosionFrameIndex >= this.explosionFrames.length) {
+                this.node.destroy();
+                return;
+            }
+
+            sprite.spriteFrame = this.explosionFrames[
+                this.explosionFrameIndex
+            ];
+        }
     }
 
     private ensureCollider() {

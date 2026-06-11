@@ -67,6 +67,12 @@ export default class Level3SpaceshipController extends cc.Component {
     maxX = 1880;
 
     @property
+    minY = 40;
+
+    @property
+    maxY = 1880;
+
+    @property
     altitudeSpeed = 0.75;
 
     @property
@@ -140,6 +146,9 @@ export default class Level3SpaceshipController extends cc.Component {
 
     @property
     staminaDrainSpeedRatio = 0.75;
+
+    @property
+    staminaSlowdownThreshold = 0.25;
 
     @property
     staminaRecoveryThreshold = 0.2;
@@ -309,7 +318,23 @@ export default class Level3SpaceshipController extends cc.Component {
         const staminaRatio = this.maxStamina > 0
             ? cc.misc.clampf(this.stamina / this.maxStamina, 0, 1)
             : 0;
-        const thrustRatio = this.staminaExhausted ? 0 : staminaRatio;
+        const minimumThrust = cc.misc.clampf(
+            this.staminaDrainSpeedRatio,
+            0,
+            1
+        );
+        const slowdownThreshold = Math.max(
+            0.001,
+            this.staminaSlowdownThreshold
+        );
+        const lowStaminaProgress = cc.misc.clampf(
+            staminaRatio / slowdownThreshold,
+            0,
+            1
+        );
+        const thrustRatio = this.staminaExhausted
+            ? minimumThrust
+            : cc.misc.lerp(minimumThrust, 1, lowStaminaProgress);
         const target = direction.mul(this.moveSpeed * thrustRatio);
         const rate = direction.magSqr() > 0
             ? this.acceleration
@@ -334,12 +359,21 @@ export default class Level3SpaceshipController extends cc.Component {
             this.minX,
             this.maxX
         );
-        const nextY = this.node.y
-            + (this.velocity.y + this.planetGravityVelocity.y) * dt;
+        const nextY = cc.misc.clampf(
+            this.node.y
+                + (this.velocity.y + this.planetGravityVelocity.y) * dt,
+            this.minY,
+            this.maxY
+        );
 
         if (nextX === this.minX || nextX === this.maxX) {
             this.velocity.x = 0;
             this.planetGravityVelocity.x = 0;
+        }
+
+        if (nextY === this.minY || nextY === this.maxY) {
+            this.velocity.y = 0;
+            this.planetGravityVelocity.y = 0;
         }
 
         this.node.setPosition(nextX, nextY);

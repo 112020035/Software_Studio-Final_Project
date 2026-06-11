@@ -5,6 +5,8 @@ const { ccclass, property } = cc._decorator;
 
 @ccclass
 export default class Level3PlanetObstacle extends cc.Component {
+    public static activeObstacles = new Set<Level3PlanetObstacle>();
+
     @property
     collisionRadius = 50;
 
@@ -29,6 +31,18 @@ export default class Level3PlanetObstacle extends cc.Component {
             collider = this.node.addComponent(cc.CircleCollider);
         }
         collider.radius = this.collisionRadius;
+    }
+
+    onEnable() {
+        Level3PlanetObstacle.activeObstacles.add(this);
+    }
+
+    onDisable() {
+        Level3PlanetObstacle.activeObstacles.delete(this);
+    }
+
+    onDestroy() {
+        Level3PlanetObstacle.activeObstacles.delete(this);
     }
 
     update(dt: number) {
