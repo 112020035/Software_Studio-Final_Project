@@ -17,6 +17,8 @@ export default class FirebaseManager extends cc.Component {
 
     private static _app: any = null;
     private static _auth: any = null;
+    private static _db: any = null;
+    static get db(): any { return FirebaseManager._db; }
 
     static get auth(): any {
         return FirebaseManager.ensureInitialized();
@@ -35,12 +37,18 @@ export default class FirebaseManager extends cc.Component {
             ? firebase.app()
             : firebase.initializeApp(firebaseConfig);
         FirebaseManager._auth = firebase.auth(FirebaseManager._app);
+        FirebaseManager._db = firebase.firestore(FirebaseManager._app);
+        console.log("Firebase db:", FirebaseManager._db);
         console.log("Firebase 初始化成功");
 
         return FirebaseManager._auth;
     }
 
     onLoad() {
-        FirebaseManager.ensureInitialized();
+        try {
+            FirebaseManager.ensureInitialized();
+        } catch(e) {
+            console.log("FirebaseManager 初始化失敗:", e);
+        }
     }
 }

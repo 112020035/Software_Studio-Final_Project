@@ -1,5 +1,6 @@
 const { ccclass, property } = cc._decorator;
 import { AudioBroadcast } from "../Audio/AudioEvent";
+import FirebaseManager from './FirebaseManager';
 declare const firebase: any;
 
 const firebaseConfig = {
@@ -29,6 +30,7 @@ export default class LoginController extends cc.Component {
 
     @property(cc.EditBox)  emailInput: cc.EditBox    = null!;
     @property(cc.EditBox)  passwordInput: cc.EditBox = null!;
+    @property(cc.EditBox)  nameInput: cc.EditBox = null!;
     @property(cc.Label)    errorLabel: cc.Label      = null!;
     @property(cc.Node)     loadingNode: cc.Node      = null!;
 
@@ -40,6 +42,8 @@ export default class LoginController extends cc.Component {
     onLoginClick() {
         const email    = this.emailInput.string.trim();
         const password = this.passwordInput.string;
+        const name = this.nameInput.string.trim();
+        
         AudioBroadcast.playEffect("btn_press");
         if (!email || !password) {
             this.errorLabel.string = '請填寫帳號密碼';
@@ -66,9 +70,16 @@ export default class LoginController extends cc.Component {
     onRegisterClick() {
         const email    = this.emailInput.string.trim();
         const password = this.passwordInput.string;
+        const name     = this.nameInput.string.trim();
+
         AudioBroadcast.playEffect("btn_press");
+
         if (!email || !password) {
             this.errorLabel.string = '請填寫帳號密碼';
+            return;
+        }
+        if (!name) {
+            this.errorLabel.string = '請填寫名字';
             return;
         }
 
@@ -78,17 +89,32 @@ export default class LoginController extends cc.Component {
         getFirebaseAuth()
             .createUserWithEmailAndPassword(email, password)
             .then((userCredential: any) => {
-                console.log('註冊成功:', userCredential.user.uid);
+                const user = userCredential.user;
+                return user.updateProfile({ displayName: name })
+                    .then(() => {
+                        return FirebaseManager.db
+                            .collection('users')
+                            .doc(user.uid)
+                            .set({
+                                name: name,
+                                email: email,
+                                createdAt: new Date()
+                            });
+                    });
+            })
+            .then(() => {
+                console.log('註冊成功，名字已存入 Firestore：', name);
                 cc.director.loadScene('Intro');
             })
             .catch((error: any) => {
+                console.log('錯誤 code:', error.code);
+                console.log('錯誤訊息:', error.message);
                 this.errorLabel.string = this.parseError(error.code);
             })
             .finally(() => {
                 this.loadingNode.active = false;
             });
     }
-
     private parseError(code: string): string {
         const map: { [key: string]: string } = {
             'auth/user-not-found':       '帳號不存在',
