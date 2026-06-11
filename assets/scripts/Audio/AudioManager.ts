@@ -11,6 +11,7 @@ type AudioName =
     | "craft_turning"
     | "damage"
     | "enter_level"
+    | "failure_bgm"
     | "gun_shoot"
     | "inventory_bgm"
     | "jump"
@@ -34,8 +35,9 @@ const BGM_NAMES: AudioName[] = [
     "main_scene_bgm",
     "story_line_bgm",
     "level2_bgm",
-    "level3_bgm"
-    "inventory_bgm"
+    "level3_bgm",
+    "inventory_bgm",
+    "failure_bgm"
 ];
 
 const { ccclass } = cc._decorator;
@@ -145,6 +147,7 @@ export default class AudioManager extends cc.Component {
     public level2_bgm(): void { this.playBgm("level2_bgm"); }
     public level3_bgm(): void { this.playBgm("level3_bgm"); }
     public inventory_bgm(): void { this.playBgm("inventory_bgm"); }
+    public failure_bgm(): void { this.playBgm("failure_bgm"); }
 
     // ─── 核心播放邏輯 ────────────────────────────────────
 
