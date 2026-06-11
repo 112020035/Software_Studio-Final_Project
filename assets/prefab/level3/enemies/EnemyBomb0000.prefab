@@ -61,6 +61,21 @@
     "damage": 2,
     "lifetime": 4,
     "collisionRadius": 7,
+    "explosionFrames": [
+      { "__uuid__": "47226a2a-c62e-4282-ada6-087c22cc41ad" },
+      { "__uuid__": "6dc1f008-6eca-43e3-8322-c529723d773a" },
+      { "__uuid__": "78f3bd07-9d17-4ba4-af62-5a68aefb20e4" },
+      { "__uuid__": "2a2015dc-2589-4618-9192-5e15924ef0ef" },
+      { "__uuid__": "39ac2a9c-0ad0-43da-bfb1-43dbde17ebaf" },
+      { "__uuid__": "318e137c-4046-4631-b59f-5567a17e2f44" },
+      { "__uuid__": "9afb1623-060e-4e24-be29-05f831770e49" },
+      { "__uuid__": "dca463f6-8d95-4a89-84fb-c336254b4f5e" },
+      { "__uuid__": "eb6ec121-4d38-4dfe-8b5a-07d935efee3c" }
+    ],
+    "explosionFps": 10,
+    "explosionScale": 0.12,
+    "cameraShakeStrength": 8,
+    "cameraShakeDuration": 0.22,
     "_id": ""
   },
   {

@@ -11,6 +11,7 @@
       false,
       true,
       true,
+      true,
       true
     ],
     [
@@ -33,6 +34,15 @@
     ],
     [
       false,
+      true,
+      false,
+      false,
+      false,
+      false
+    ],
+    [
+      false,
+      false,
       false,
       false,
       false,
@@ -46,19 +56,22 @@
       false,
       false,
       false,
-      false
-    ],
-    [
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
       false,
       false
     ],
     [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
+    [
+      false,
       false,
       false,
       false,
@@ -101,7 +114,8 @@
     "Player",
     "Ground",
     "Entry",
-    "Spaceship"
+    "Spaceship",
+    "Home"
   ],
-  "start-scene": "current"
+  "start-scene": "e25095ac-0544-416d-b6a7-415f84b1f7cd"
 }

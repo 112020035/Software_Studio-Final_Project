@@ -49,11 +49,18 @@ cc.Class({
         minX: -99999,
         maxX: 99999,
         minY: -99999,
-        maxY: 99999
+        maxY: 99999,
+        maxShakeStrength: 20
     },
 
     // 初始化時自動尋找預設追蹤目標。
     onLoad: function () {
+        this.shakeStrength = 0;
+        this.shakeDuration = 0;
+        this.shakeTimeRemaining = 0;
+        this.lastShakeOffset = cc.v2();
+        cc.director.on('level3-camera-shake', this.startShake, this);
+
         if (!this.target && this.targets.length === 0 && this.autoFindTargetName) {
             this.target = cc.find(this.autoFindTargetName);
         }
@@ -71,17 +78,23 @@ cc.Class({
     },
 
     // 在角色更新後平滑移動鏡頭，確保畫面跟上目標。
+    onDestroy: function () {
+        cc.director.off('level3-camera-shake', this.startShake, this);
+    },
+
     lateUpdate: function (dt) {
         var center = this.getTargetsCenter();
         if (!center) {
             return;
         }
 
+        var currentX = this.node.x - this.lastShakeOffset.x;
+        var currentY = this.node.y - this.lastShakeOffset.y;
         var fullFollowActive = this.isFullFollowActive(center);
         var activeFollowX = fullFollowActive ? this.fullFollowX : this.followX;
         var activeFollowY = fullFollowActive ? this.fullFollowY : this.followY;
-        var desiredX = activeFollowX ? center.x + this.offset.x : this.node.x;
-        var desiredY = activeFollowY ? center.y + this.offset.y : this.node.y;
+        var desiredX = activeFollowX ? center.x + this.offset.x : currentX;
+        var desiredY = activeFollowY ? center.y + this.offset.y : currentY;
         var minCameraX = this.getMinCameraX();
         var maxCameraX = this.getMaxCameraX();
         this.logBoundsOnce(minCameraX);
@@ -92,16 +105,63 @@ cc.Class({
         }
 
         var t = 1 - Math.exp(-this.smoothSpeed * dt);
-        var nextX = cc.misc.lerp(this.node.x, desiredX, t);
-        var nextY = cc.misc.lerp(this.node.y, desiredY, t);
+        var nextX = cc.misc.lerp(currentX, desiredX, t);
+        var nextY = cc.misc.lerp(currentY, desiredY, t);
 
         if (this.useBounds) {
             nextX = cc.misc.clampf(nextX, minCameraX, maxCameraX);
             nextY = cc.misc.clampf(nextY, this.minY, this.maxY);
         }
 
-        this.node.x = nextX;
-        this.node.y = nextY;
+        var shakeOffset = this.getShakeOffset(dt);
+        var finalX = nextX + shakeOffset.x;
+        var finalY = nextY + shakeOffset.y;
+
+        if (this.useBounds) {
+            finalX = cc.misc.clampf(finalX, minCameraX, maxCameraX);
+            finalY = cc.misc.clampf(finalY, this.minY, this.maxY);
+        }
+
+        this.lastShakeOffset.x = finalX - nextX;
+        this.lastShakeOffset.y = finalY - nextY;
+        this.node.x = finalX;
+        this.node.y = finalY;
+    },
+
+    startShake: function (strength, duration) {
+        var requestedStrength = Math.max(0, strength || 0);
+        var requestedDuration = Math.max(0, duration || 0);
+        this.shakeStrength = Math.min(
+            this.maxShakeStrength,
+            Math.max(this.shakeStrength, requestedStrength)
+        );
+        this.shakeDuration = Math.max(this.shakeDuration, requestedDuration);
+        this.shakeTimeRemaining = Math.max(
+            this.shakeTimeRemaining,
+            requestedDuration
+        );
+    },
+
+    getShakeOffset: function (dt) {
+        if (this.shakeTimeRemaining <= 0 || this.shakeDuration <= 0) {
+            this.lastShakeOffset.x = 0;
+            this.lastShakeOffset.y = 0;
+            return cc.v2();
+        }
+
+        this.shakeTimeRemaining = Math.max(0, this.shakeTimeRemaining - dt);
+        var fade = this.shakeTimeRemaining / this.shakeDuration;
+        var strength = this.shakeStrength * fade;
+
+        if (this.shakeTimeRemaining <= 0) {
+            this.shakeStrength = 0;
+            this.shakeDuration = 0;
+        }
+
+        return cc.v2(
+            (Math.random() * 2 - 1) * strength,
+            (Math.random() * 2 - 1) * strength
+        );
     },
 
     // 追蹤中心越過 fullFollowStartX 後切換鏡頭行為。

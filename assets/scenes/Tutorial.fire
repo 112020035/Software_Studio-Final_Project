@@ -579,7 +579,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 788.67,
+      "width": 758.33,
       "height": 113
     },
     "_anchorPoint": {
@@ -631,8 +631,8 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_string": "點擊畫面出發探索！\n駕駛微型噴射船尋找隱藏通道，搜集零件來強化你的飛船。",
-    "_N$string": "點擊畫面出發探索！\n駕駛微型噴射船尋找隱藏通道，搜集零件來強化你的飛船。",
+    "_string": "駕駛微型噴射船尋找隱藏通道，搜集零件來強化你的飛船\n點擊畫面出發探索！",
+    "_N$string": "駕駛微型噴射船尋找隱藏通道，搜集零件來強化你的飛船\n點擊畫面出發探索！",
     "_fontSize": 28,
     "_lineHeight": 50,
     "_enableWrapText": true,

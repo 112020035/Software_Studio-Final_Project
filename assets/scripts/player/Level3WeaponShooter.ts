@@ -6,6 +6,18 @@ import { AudioBroadcast } from "../Audio/AudioEvent";
 
 const { ccclass, property } = cc._decorator;
 
+const EXPLOSION_FRAME_UUIDS = [
+    "47226a2a-c62e-4282-ada6-087c22cc41ad",
+    "6dc1f008-6eca-43e3-8322-c529723d773a",
+    "78f3bd07-9d17-4ba4-af62-5a68aefb20e4",
+    "2a2015dc-2589-4618-9192-5e15924ef0ef",
+    "39ac2a9c-0ad0-43da-bfb1-43dbde17ebaf",
+    "318e137c-4046-4631-b59f-5567a17e2f44",
+    "9afb1623-060e-4e24-be29-05f831770e49",
+    "dca463f6-8d95-4a89-84fb-c336254b4f5e",
+    "eb6ec121-4d38-4dfe-8b5a-07d935efee3c"
+];
+
 @ccclass
 export default class Level3WeaponShooter extends cc.Component {
     @property(cc.Node)
@@ -44,6 +56,18 @@ export default class Level3WeaponShooter extends cc.Component {
     @property
     bulletScale = 1;
 
+    @property([cc.SpriteFrame])
+    explosionFrames: cc.SpriteFrame[] = [];
+
+    @property
+    explosionFramesPerSecond = 10;
+
+    @property
+    explosionScale = 0.28;
+
+    @property
+    explosionRadius = 150;
+
     @property
     fireCooldown = 0.12;
 
@@ -58,6 +82,7 @@ export default class Level3WeaponShooter extends cc.Component {
     private createdBullets = 0;
     private reusedBullets = 0;
     private activeBullets = 0;
+    private bulletPoolReady = false;
 
     onLoad() {
         cc.director.getCollisionManager().enabled = true;
@@ -66,7 +91,11 @@ export default class Level3WeaponShooter extends cc.Component {
             this.bulletLayer = this.node.parent || cc.director.getScene();
         }
 
-        this.prewarmPool();
+        this.prepareExplosionFrames(() => {
+            if (!this.node || !this.node.isValid) return;
+            this.prewarmPool();
+            this.bulletPoolReady = true;
+        });
 
         cc.director.on(
             "level3-player-fire",
@@ -85,7 +114,13 @@ export default class Level3WeaponShooter extends cc.Component {
     }
 
     private onPlayerFire(direction: number, source: cc.Node) {
-        if (source !== this.node || !this.bulletTexture) return;
+        if (
+            source !== this.node
+            || !this.bulletTexture
+            || !this.bulletPoolReady
+        ) {
+            return;
+        }
 
         const now = Date.now() / 1000;
         if (now - this.lastFireTime < this.fireCooldown) return;
@@ -140,6 +175,53 @@ export default class Level3WeaponShooter extends cc.Component {
         this.logStats("prewarm");
     }
 
+    private prepareExplosionFrames(onReady: () => void) {
+        if (this.explosionFrames && this.explosionFrames.length > 0) {
+            onReady();
+            return;
+        }
+
+        const assetManager = (cc as any).assetManager;
+        if (!assetManager || typeof assetManager.loadAny !== "function") {
+            cc.warn(
+                "[Level3WeaponShooter] Cannot load player explosion frames."
+            );
+            onReady();
+            return;
+        }
+
+        assetManager.loadAny(
+            EXPLOSION_FRAME_UUIDS,
+            (error: Error, assets: cc.Asset[]) => {
+                if (error) {
+                    cc.warn(
+                        "[Level3WeaponShooter] Failed to load player "
+                        + `explosion frames: ${error.message || error}`
+                    );
+                    onReady();
+                    return;
+                }
+
+                this.explosionFrames = (assets || []).filter(
+                    asset => asset instanceof cc.SpriteFrame
+                ) as cc.SpriteFrame[];
+
+                if (
+                    this.explosionFrames.length
+                    !== EXPLOSION_FRAME_UUIDS.length
+                ) {
+                    cc.warn(
+                        "[Level3WeaponShooter] Loaded "
+                        + `${this.explosionFrames.length}/`
+                        + `${EXPLOSION_FRAME_UUIDS.length} explosion frames.`
+                    );
+                }
+
+                onReady();
+            }
+        );
+    }
+
     private createBulletNode(): cc.Node {
         const bulletNode = new cc.Node("PlayerBullet");
         bulletNode.group = "default";
@@ -157,6 +239,10 @@ export default class Level3WeaponShooter extends cc.Component {
             this.bulletFrameHeight,
             this.bulletFrameCount,
             this.bulletFramesPerSecond,
+            this.explosionFrames,
+            this.explosionFramesPerSecond,
+            this.explosionScale,
+            this.explosionRadius,
             this.recycleBullet.bind(this)
         );
 

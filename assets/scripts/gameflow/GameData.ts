@@ -56,9 +56,13 @@ export default class GameData {
     }
 
     public static calcEnding() {
-        if (GameData.itemCount >= 10) {
+        GameData.itemCount = GameData.highQualities[0] + GameData.highQualities[1] + GameData.highQualities[2];
+        if (GameData.highQualities[0] < 0 || GameData.highQualities[1] < 0 || GameData.highQualities[2] < 0){
+            GameData.endingType = "bad";
+        }
+        else if (GameData.itemCount >= 5) {
             GameData.endingType = "good";
-        } else if (GameData.itemCount >= 5) {
+        } else if (GameData.itemCount >= 3) {
             GameData.endingType = "normal";
         } else {
             GameData.endingType = "bad";

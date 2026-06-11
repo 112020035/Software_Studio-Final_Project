@@ -10,6 +10,8 @@ export default class PlayerCollider extends cc.Component {
     // 重疊時要顯示的提示節點（由 ExploreCtrl 設定）
     public onEnterSpaceship: () => void = null;
     public onExitSpaceship:  () => void = null;
+    public onEnterHome: () => void = null;
+    public onExitHome:  () => void = null;
     public onEnterLevel:     (index: number) => void = null;
     public onExitLevel:      (index: number) => void = null;
 
@@ -33,6 +35,11 @@ export default class PlayerCollider extends cc.Component {
             return;
         }
 
+        if (group === "Home") {
+            if (this.onEnterHome) this.onEnterHome();
+            return;
+        }
+
         if (group === "Entry") {
             const index = this.getEntryIndex(other.node);
             if (index >= 0 && this.onEnterLevel) this.onEnterLevel(index);
@@ -44,6 +51,11 @@ export default class PlayerCollider extends cc.Component {
 
         if (group === "Spaceship") {
             if (this.onExitSpaceship) this.onExitSpaceship();
+            return;
+        }
+
+        if (group === "Spaceship") {
+            if (this.onExitHome) this.onExitHome();
             return;
         }
 

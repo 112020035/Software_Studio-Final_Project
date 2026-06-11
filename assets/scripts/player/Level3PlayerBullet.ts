@@ -22,8 +22,13 @@ export default class Level3PlayerBullet extends cc.Component {
     private frameIndex = 0;
     private frameElapsed = 0;
     private framesPerSecond = 14;
+    private explosionFrames: cc.SpriteFrame[] = [];
+    private explosionFramesPerSecond = 10;
+    private explosionScale = 0.28;
+    private explosionRadius = 150;
     private recycleCallback: (bullet: cc.Node) => void = null;
     private isActive = false;
+    private isExploding = false;
 
     public configure(
         texture: cc.Texture2D,
@@ -31,11 +36,19 @@ export default class Level3PlayerBullet extends cc.Component {
         frameHeight: number,
         frameCount: number,
         framesPerSecond: number,
+        explosionFrames: cc.SpriteFrame[],
+        explosionFramesPerSecond: number,
+        explosionScale: number,
+        explosionRadius: number,
         recycleCallback: (bullet: cc.Node) => void
     ) {
         this.sprite = this.getComponent(cc.Sprite)
             || this.node.addComponent(cc.Sprite);
         this.framesPerSecond = framesPerSecond;
+        this.explosionFrames = explosionFrames || [];
+        this.explosionFramesPerSecond = explosionFramesPerSecond;
+        this.explosionScale = explosionScale;
+        this.explosionRadius = explosionRadius;
         this.recycleCallback = recycleCallback;
         this.node.setContentSize(frameWidth, frameHeight);
         this.frames.length = 0;
@@ -76,6 +89,10 @@ export default class Level3PlayerBullet extends cc.Component {
         this.frameIndex = 0;
         this.frameElapsed = 0;
         this.isActive = true;
+        this.isExploding = false;
+
+        const collider = this.getComponent(cc.BoxCollider);
+        if (collider) collider.enabled = true;
 
         if (this.sprite && this.frames.length > 0) {
             this.sprite.spriteFrame = this.frames[0];
@@ -88,11 +105,17 @@ export default class Level3PlayerBullet extends cc.Component {
         this.frameIndex = 0;
         this.frameElapsed = 0;
         this.velocity = cc.v2();
+        this.isExploding = false;
         this.node.stopAllActions();
     }
 
     update(dt: number) {
         if (!this.isActive) return;
+
+        if (this.isExploding) {
+            this.updateExplosion(dt);
+            return;
+        }
 
         this.elapsed += dt;
         if (this.elapsed >= this.lifetime) {
@@ -118,19 +141,127 @@ export default class Level3PlayerBullet extends cc.Component {
     }
 
     private hitTarget(target: cc.Node) {
-        if (!this.isActive || !target || target.group === "Player") return;
-
-        const components = target.getComponents(cc.Component);
-        for (const component of components) {
-            const receiver = component as any;
-            if (typeof receiver.takeDamage === "function") {
-                receiver.takeDamage(this.damage, this.node);
-                break;
-            }
+        if (
+            !this.isActive
+            || this.isExploding
+            || !target
+            || target.group === "Player"
+            || target.name === "PlayerBullet"
+            || this.isEnemyProjectile(target)
+        ) {
+            return;
         }
 
-        cc.director.emit("level3-player-bullet-hit", target, this.damage);
-        this.recycle();
+        this.startExplosion();
+    }
+
+    private isEnemyProjectile(node: cc.Node): boolean {
+        let current = node;
+
+        while (current) {
+            if (current.getComponent("Level3EnemyProjectile")) {
+                return true;
+            }
+            current = current.parent;
+        }
+
+        return false;
+    }
+
+    private startExplosion() {
+        if (!this.isActive || this.isExploding) return;
+
+        this.isExploding = true;
+        this.velocity = cc.v2();
+        this.frameIndex = 0;
+        this.frameElapsed = 0;
+
+        const collider = this.getComponent(cc.BoxCollider);
+        if (collider) collider.enabled = false;
+
+        this.damageEnemiesInRange();
+        cc.director.emit("level3-camera-shake", 11, 0.26);
+
+        if (!this.sprite || this.explosionFrames.length === 0) {
+            this.recycle();
+            return;
+        }
+
+        this.node.angle = 0;
+        this.node.scale = this.explosionScale;
+        this.sprite.spriteFrame = this.explosionFrames[0];
+    }
+
+    private damageEnemiesInRange() {
+        const scene = cc.director.getScene();
+        if (!scene) return;
+
+        const explosionWorld = this.node.convertToWorldSpaceAR(cc.Vec2.ZERO);
+        const enemies: cc.Node[] = [];
+        this.findEnemies(scene, enemies);
+
+        for (const enemy of enemies) {
+            const enemyWorld = enemy.convertToWorldSpaceAR(cc.Vec2.ZERO);
+            const controller = enemy.getComponent("Level3EnemyShip") as any;
+            const enemyRadius = controller
+                ? (controller.collisionRadius || 0) * Math.max(
+                    Math.abs(enemy.scaleX),
+                    Math.abs(enemy.scaleY)
+                )
+                : 0;
+
+            if (
+                enemyWorld.sub(explosionWorld).mag()
+                > this.explosionRadius + enemyRadius
+            ) {
+                continue;
+            }
+
+            controller.takeDamage(this.damage);
+            cc.director.emit(
+                "level3-player-bullet-hit",
+                enemy,
+                this.damage
+            );
+        }
+    }
+
+    private findEnemies(node: cc.Node, enemies: cc.Node[]) {
+        if (!node || !node.isValid || !node.activeInHierarchy) return;
+
+        const controller = node.getComponent("Level3EnemyShip") as any;
+        if (controller && typeof controller.takeDamage === "function") {
+            enemies.push(node);
+        }
+
+        for (const child of node.children) {
+            this.findEnemies(child, enemies);
+        }
+    }
+
+    private updateExplosion(dt: number) {
+        if (!this.sprite || this.explosionFrames.length === 0) {
+            this.recycle();
+            return;
+        }
+
+        this.frameElapsed += dt;
+        const frameDuration = 1 / Math.max(
+            1,
+            this.explosionFramesPerSecond
+        );
+
+        while (this.frameElapsed >= frameDuration) {
+            this.frameElapsed -= frameDuration;
+            this.frameIndex += 1;
+
+            if (this.frameIndex >= this.explosionFrames.length) {
+                this.recycle();
+                return;
+            }
+
+            this.sprite.spriteFrame = this.explosionFrames[this.frameIndex];
+        }
     }
 
     private recycle() {

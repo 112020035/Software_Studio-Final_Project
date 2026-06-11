@@ -23,7 +23,7 @@ export default class IntroCtrl extends cc.Component {
 
     /** Label 淡入持續秒數 */
     @property(cc.Float)
-    fadeDuration: number = 1.0;
+    fadeDuration: number = 2.0;
 
     private slides: cc.Node[] = [];
     private currentIndex: number = 0;

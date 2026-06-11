@@ -4126,8 +4126,8 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_string": "暈頭轉向的星際迷航",
-    "_N$string": "暈頭轉向的星際迷航",
+    "_string": "暈頭轉向的星際大戰",
+    "_N$string": "暈頭轉向的星際大戰",
     "_fontSize": 30,
     "_lineHeight": 30,
     "_enableWrapText": true,
@@ -6282,7 +6282,7 @@
     },
     "component": "",
     "_componentId": "3408elB4gpC5ZeSuTK3tKCF",
-    "handler": "onClickEnterLevel",
+    "handler": "onClickEnterOutro",
     "customEventData": ""
   },
   {
@@ -6398,8 +6398,8 @@
     "_color": {
       "__type__": "cc.Color",
       "r": 255,
-      "g": 222,
-      "b": 29,
+      "g": 255,
+      "b": 255,
       "a": 255
     },
     "_contentSize": {
@@ -6456,8 +6456,8 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_string": "太空垃圾之回家的路",
-    "_N$string": "太空垃圾之回家的路",
+    "_string": "準備好重新啟航",
+    "_N$string": "準備好重新啟航",
     "_fontSize": 30,
     "_lineHeight": 30,
     "_enableWrapText": true,
@@ -6858,7 +6858,7 @@
     },
     "component": "",
     "_componentId": "3408elB4gpC5ZeSuTK3tKCF",
-    "handler": "onClickCloseLevel",
+    "handler": "onClickCloseOutro",
     "customEventData": ""
   },
   {
@@ -6939,7 +6939,7 @@
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
     "_spriteFrame": {
-      "__uuid__": "889425d1-8d66-42bd-86fa-46955628a7c5"
+      "__uuid__": "14a1987e-cdbe-428f-bbfe-3e3b00c51f83"
     },
     "_type": 0,
     "_sizeMode": 0,
@@ -7465,8 +7465,8 @@
     "_skewX": 0,
     "_skewY": 0,
     "_is3DNode": false,
-    "_groupIndex": 3,
-    "groupIndex": 3,
+    "_groupIndex": 5,
+    "groupIndex": 5,
     "_id": "d2KzIWpPFB85acfwMomX5Y"
   },
   {
@@ -7620,8 +7620,14 @@
     "spaceship": {
       "__id__": 157
     },
+    "home": {
+      "__id__": 161
+    },
     "promptInventory": {
       "__id__": 101
+    },
+    "promptOutro": {
+      "__id__": 125
     },
     "levelEntries": [
       {
@@ -7632,9 +7638,6 @@
       },
       {
         "__id__": 15
-      },
-      {
-        "__id__": 161
       }
     ],
     "promptLevels": [
@@ -7646,8 +7649,7 @@
       },
       {
         "__id__": 77
-      },
-      null
+      }
     ],
     "thrust": 180,
     "rotateSpeed": 80,

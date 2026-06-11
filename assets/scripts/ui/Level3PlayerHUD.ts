@@ -50,6 +50,39 @@ export default class Level3PlayerHUD extends cc.Component {
     @property(cc.SpriteFrame)
     shieldBarFill: cc.SpriteFrame = null;
 
+    @property([cc.SpriteFrame])
+    enemyKillIconFrames: cc.SpriteFrame[] = [];
+
+    @property([cc.SpriteFrame])
+    killDigitFrames: cc.SpriteFrame[] = [];
+
+    @property(cc.SpriteFrame)
+    killMultiplyFrame: cc.SpriteFrame = null;
+
+    @property([cc.Integer])
+    enemyScoreValues: number[] = [1, 2, 3, 4];
+
+    @property
+    killRightMargin = 24;
+
+    @property
+    killTopMargin = 24;
+
+    @property
+    killRowGap = 62;
+
+    @property
+    killIconSize = 48;
+
+    @property
+    killDigitWidth = 22;
+
+    @property
+    killDigitHeight = 28;
+
+    @property
+    killDigitGap = 2;
+
     @property
     leftMargin = 24;
 
@@ -73,6 +106,10 @@ export default class Level3PlayerHUD extends cc.Component {
 
     private hudRoot: cc.Node = null;
     private fills: { [key: string]: cc.Sprite } = {};
+    private killValueRoots: cc.Node[] = [];
+    private killFallbackLabels: cc.Label[] = [];
+    private killCounts = [0, 0, 0, 0];
+    private totalScore = 0;
 
     onLoad() {
         if (!this.player) {
@@ -83,6 +120,11 @@ export default class Level3PlayerHUD extends cc.Component {
         }
 
         this.raiseCanvasAboveWorld();
+        cc.systemEvent.on(
+            "level3-enemy-killed",
+            this.onEnemyKilled,
+            this
+        );
         this.createHud();
         this.refresh();
         
@@ -90,6 +132,14 @@ export default class Level3PlayerHUD extends cc.Component {
     start() {
         // 播放BGM
         AudioBroadcast.playBgm("level3_bgm");
+    }
+
+    onDestroy() {
+        cc.systemEvent.off(
+            "level3-enemy-killed",
+            this.onEnemyKilled,
+            this
+        );
     }
 
     update() {
@@ -142,6 +192,7 @@ export default class Level3PlayerHUD extends cc.Component {
             leftX,
             topY - step * 3
         );
+        this.createKillCounters();
         this.createDebugMarker();
         this.syncHudToCamera();
 
@@ -149,6 +200,147 @@ export default class Level3PlayerHUD extends cc.Component {
             `[Level3PlayerHUD] created bars=`
             + `${Object.keys(this.fills).length}, parent=${parent.name}`
         );
+    }
+
+    public getKillCounts(): number[] {
+        return this.killCounts.slice();
+    }
+
+    public getTotalScore(): number {
+        return this.totalScore;
+    }
+
+    private onEnemyKilled(enemyTypeIndex: number) {
+        const index = Math.floor(Number(enemyTypeIndex));
+        if (index < 0 || index >= this.killCounts.length) return;
+
+        this.killCounts[index] += 1;
+        const score = this.enemyScoreValues[index] || 0;
+        this.totalScore += Math.max(0, score);
+        this.drawKillCount(index);
+        cc.systemEvent.emit(
+            "level3-score-changed",
+            this.totalScore,
+            this.getKillCounts()
+        );
+    }
+
+    private createKillCounters() {
+        const rightX = cc.winSize.width * 0.5 - this.killRightMargin;
+        const topY = cc.winSize.height * 0.5 - this.killTopMargin;
+
+        for (let index = 0; index < 4; index += 1) {
+            const row = new cc.Node(`Enemy Type ${index + 1} Kills`);
+            row.setAnchorPoint(1, 0.5);
+            row.setPosition(rightX, topY - this.killRowGap * index);
+            this.hudRoot.addChild(row);
+
+            this.createSizedSprite(
+                row,
+                "Enemy Icon",
+                this.enemyKillIconFrames[index],
+                -118,
+                0,
+                this.killIconSize,
+                this.killIconSize
+            );
+
+            if (this.killMultiplyFrame) {
+                this.createSizedSprite(
+                    row,
+                    "Multiply",
+                    this.killMultiplyFrame,
+                    -73,
+                    0,
+                    this.killDigitWidth,
+                    this.killDigitHeight
+                );
+            } else {
+                const multiply = new cc.Node("Multiply Fallback");
+                multiply.setPosition(-73, 0);
+                row.addChild(multiply);
+                const label = multiply.addComponent(cc.Label);
+                label.string = "x";
+                label.fontSize = 22;
+                label.lineHeight = 24;
+            }
+
+            const valueRoot = new cc.Node("Kill Count");
+            valueRoot.setAnchorPoint(1, 0.5);
+            valueRoot.setPosition(0, 0);
+            row.addChild(valueRoot);
+            this.killValueRoots[index] = valueRoot;
+
+            const fallback = valueRoot.addComponent(cc.Label);
+            fallback.fontSize = 24;
+            fallback.lineHeight = 28;
+            fallback.horizontalAlign = cc.Label.HorizontalAlign.RIGHT;
+            const outline = valueRoot.addComponent(cc.LabelOutline);
+            outline.color = cc.Color.BLACK;
+            outline.width = 2;
+            this.killFallbackLabels[index] = fallback;
+            this.drawKillCount(index);
+        }
+    }
+
+    private drawKillCount(index: number) {
+        const root = this.killValueRoots[index];
+        const label = this.killFallbackLabels[index];
+        if (!root || !label) return;
+
+        const text = Math.max(0, this.killCounts[index]).toString();
+        if (!this.hasKillDigitFrames()) {
+            label.enabled = true;
+            label.string = text;
+            return;
+        }
+
+        label.enabled = false;
+        root.removeAllChildren();
+        const step = this.killDigitWidth + this.killDigitGap;
+        for (let digitIndex = 0; digitIndex < text.length; digitIndex += 1) {
+            const digit = parseInt(text.charAt(digitIndex), 10);
+            this.createSizedSprite(
+                root,
+                `Digit ${text.charAt(digitIndex)}`,
+                this.killDigitFrames[digit],
+                -(text.length - digitIndex - 0.5) * step,
+                0,
+                this.killDigitWidth,
+                this.killDigitHeight
+            );
+        }
+    }
+
+    private hasKillDigitFrames(): boolean {
+        if (!this.killDigitFrames || this.killDigitFrames.length < 10) {
+            return false;
+        }
+        for (let index = 0; index < 10; index += 1) {
+            if (!this.killDigitFrames[index]) return false;
+        }
+        return true;
+    }
+
+    private createSizedSprite(
+        parent: cc.Node,
+        name: string,
+        frame: cc.SpriteFrame,
+        x: number,
+        y: number,
+        width: number,
+        height: number
+    ): cc.Node {
+        const node = new cc.Node(name);
+        node.setPosition(x, y);
+        parent.addChild(node);
+        if (!frame) return node;
+
+        const sprite = node.addComponent(cc.Sprite);
+        sprite.spriteFrame = frame;
+        sprite.sizeMode = cc.Sprite.SizeMode.CUSTOM;
+        node.setContentSize(width, height);
+        return node;
     }
 
     private createBar(

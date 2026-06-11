@@ -16,6 +16,9 @@ export default class Level3Ctrl extends cc.Component {
     @property
     gameDuration: number = 180;
 
+    @property
+    gameOverScene: string = "GameOver";
+
     // ── 進度條版面 ────────────────────────────────────────────
     @property barMarginX:        number = 80;
     @property barMarginBottom:   number = 50;
@@ -50,6 +53,7 @@ export default class Level3Ctrl extends cc.Component {
     private remainingTime:  number   = 0;
     private isComplete:     boolean  = false;
     private isTimeUp:       boolean  = false;
+    private isGameOver:     boolean  = false;
     private canvasNode:     cc.Node  = null;
     private cameraNode:     cc.Node  = null;
     private hudRoot:        cc.Node  = null;
@@ -81,7 +85,12 @@ export default class Level3Ctrl extends cc.Component {
     }
 
     update(dt: number) {
-        if (this.isComplete || this.isTimeUp) return;
+        if (this.isComplete || this.isGameOver) return;
+
+        if (this.isPlayerOutOfHealth()) {
+            this.triggerGameOver("health");
+            return;
+        }
 
         // 勝利判定
         if (this.player && this.player.y >= this.goalY) {
@@ -209,26 +218,74 @@ export default class Level3Ctrl extends cc.Component {
     // ── 遊戲事件 ────────────────────────────────────────────────
 
     private onTimeUp() {
-        if (this.isTimeUp) return;
+        if (this.isTimeUp || this.isGameOver) return;
         this.isTimeUp = true;
 
         // 專屬時間到事件，可在其他腳本監聽
         cc.director.emit("level3-time-up");
         cc.log("[Level3Ctrl] 時間到！");
 
-        this.scheduleOnce(() => {
-            cc.director.loadScene("Explore");
-        }, 1.5);
+        this.triggerGameOver("time");
     }
 
     private completeLevel() {
-        if (this.isComplete) return;
+        if (this.isComplete || this.isGameOver) return;
         this.isComplete = true;
-        GameData.currentLevel += 1;
+
+        var scene = cc.director.getScene();
+        var hud = scene && this.findComponentRecursive(scene, 'Level3PlayerHUD');
+
+        var GameData = require('GameData').default;
+        GameData.levelTime    = Math.floor(this.remainingTime);
+        GameData.coins        = hud.getTotalScore();
+
+        // 品質：用 stars 數換算
+        var levelIndex   = GameData.currentLevel - 1;
+        var quality      = this.remainingTime >= 100 ? 2 : this.remainingTime >= 50 ? 1 : 0;
+        GameData.partQualities[levelIndex] = quality;
+
         cc.director.loadScene("LevelResult");
     }
 
+    private findComponentRecursive(node: cc.Node, componentName: string): any {
+        if (!node) return null;
+
+        const c = node.getComponent(componentName);
+        if (c) return c;
+
+        for (let i = 0; i < node.childrenCount; i++) {
+            const found = this.findComponentRecursive(node.children[i], componentName);
+            if (found) return found;
+        }
+
+        return null;
+    }
+
     // ── 敵人清單 ────────────────────────────────────────────────
+
+    private isPlayerOutOfHealth(): boolean {
+        if (!this.player || !this.player.isValid) return false;
+
+        const components = this.player.getComponents(cc.Component);
+        for (const component of components) {
+            const provider = component as any;
+            if (typeof provider.getResourceState !== "function") continue;
+
+            const state = provider.getResourceState();
+            return !!state && Number(state.health) <= 0;
+        }
+        return false;
+    }
+
+    private triggerGameOver(reason: "health" | "time") {
+        if (this.isGameOver || this.isComplete) return;
+        this.isGameOver = true;
+
+        cc.director.emit("level3-game-over", reason);
+        const sceneName = (this.gameOverScene || "GameOver").trim();
+        cc.log(`[Level3Ctrl] Game over: ${reason}`);
+        cc.director.loadScene(sceneName);
+    }
 
     private refreshEnemyList() {
         this.cachedEnemies = [];
@@ -262,7 +319,7 @@ export default class Level3Ctrl extends cc.Component {
 
         if (liveCount === 0) {
             // 沒有敵人：一次補充 4~5 隻，Y 在 playerY+600 ~ playerY+1200
-            const want  = this.randomInt(4, 5);
+            const want  = this.randomInt(3, 4);
             const count = Math.min(want, this.maxEnemies - liveCount);
             for (let i = 0; i < count; i++) {
                 this.spawnOneEnemy(this.player.y + 600, this.player.y + 1200);

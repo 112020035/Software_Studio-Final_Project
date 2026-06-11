@@ -11,7 +11,9 @@ export default class ExploreCtrl extends cc.Component {
 
     @property(cc.Node) player:           cc.Node = null;
     @property(cc.Node) spaceship:        cc.Node = null;
+    @property(cc.Node) home:             cc.Node = null;
     @property(cc.Node) promptInventory:  cc.Node = null;
+    @property(cc.Node) promptOutro:  cc.Node = null;
     @property([cc.Node]) levelEntries: cc.Node[] = [];   // 拖入 entry1, entry2, entry3
     @property([cc.Node]) promptLevels: cc.Node[] = [];   // 對應三個提示節點
 
@@ -118,6 +120,16 @@ export default class ExploreCtrl extends cc.Component {
             };
             playerCollider.onExitSpaceship = () => {
                 if (this.promptInventory) this.promptInventory.active = false;
+            };
+            playerCollider.onEnterHome = () => {
+                if (this.promptCooldownTimer > 0) return;
+                if (this.promptOutro) {
+                    this.promptOutro.active = true;
+                    this.freezeGame();
+                }
+            };
+            playerCollider.onExitHome = () => {
+                if (this.promptOutro) this.promptOutro.active = false;
             };
             playerCollider.onEnterLevel = (index: number) => {
                 if (this.promptCooldownTimer > 0) return;
@@ -387,6 +399,19 @@ export default class ExploreCtrl extends cc.Component {
         this.unfreezeGame();
     }
 
+    /** 進入結局（prompt 上的「進入」按鈕綁定此方法） */
+    public onClickEnterOutro() {
+        AudioBroadcast.playEffect("btn_press");
+        cc.director.loadScene("Outro");
+    }
+
+    /** 關閉結局 prompt（「離開」按鈕綁定此方法） */
+    public onClickCloseOutro() {
+        AudioBroadcast.playEffect("btn_press");
+        if (this.promptOutro) this.promptOutro.active = false;
+        this.unfreezeGame();
+    }
+
     /** 進入關卡（各 level prompt 上的「進入」按鈕綁定此方法） */
     public onClickEnterLevel() {
         if (this.activePromptIndex < 0) return;
@@ -408,19 +433,15 @@ export default class ExploreCtrl extends cc.Component {
         switch (level) {
             case 1: 
                 GameData.enterlevel(level);
-                cc.director.loadScene("Level1");
+                cc.director.loadScene("Tutorial1");
                 break;
             case 2: 
                 GameData.enterlevel(level);
-                cc.director.loadScene("Level2"); 
+                cc.director.loadScene("Tutorial2"); 
                 break;
             case 3: 
                 GameData.enterlevel(level);
-                cc.director.loadScene("Level3"); 
-                break;
-            default:
-                GameData.calcEnding();
-                cc.director.loadScene("Ending");
+                cc.director.loadScene("Tutorial3"); 
                 break;
         }
     }
