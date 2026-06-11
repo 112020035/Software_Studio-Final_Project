@@ -4,6 +4,7 @@
  * Attach this component to Canvas or Main Camera, assign the Player node and
  * the four Pixel Bar outline/fill pairs.
  */
+import { AudioBroadcast } from "../Audio/AudioEvent";
 const { ccclass, property } = cc._decorator;
 
 interface Level3ResourceState {
@@ -84,6 +85,11 @@ export default class Level3PlayerHUD extends cc.Component {
         this.raiseCanvasAboveWorld();
         this.createHud();
         this.refresh();
+        
+    }
+    start() {
+        // 播放BGM
+        AudioBroadcast.playBgm("level3_bgm");
     }
 
     update() {
