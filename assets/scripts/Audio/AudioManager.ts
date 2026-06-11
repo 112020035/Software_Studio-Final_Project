@@ -13,6 +13,7 @@ type AudioName =
     | "enter_level"
     | "jump"
     | "level2_bgm"
+    | "level3_bgm"
     | "main_menu_bgm"
     | "main_scene_bgm"
     | "recharge"
@@ -30,6 +31,7 @@ const BGM_NAMES: AudioName[] = [
     "main_scene_bgm",
     "story_line_bgm",
     "level2_bgm",
+    "level3_bgm"
 ];
 
 const { ccclass } = cc._decorator;
@@ -135,6 +137,7 @@ export default class AudioManager extends cc.Component {
     public main_scene_bgm(): void { this.playBgm("main_scene_bgm"); }
     public story_line_bgm(): void { this.playBgm("story_line_bgm"); }
     public level2_bgm(): void { this.playBgm("level2_bgm"); }
+    public level3_bgm(): void { this.playBgm("level3_bgm"); }
 
     // ─── 核心播放邏輯 ────────────────────────────────────
 
