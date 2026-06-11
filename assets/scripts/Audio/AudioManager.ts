@@ -11,6 +11,7 @@ type AudioName =
     | "craft_turning"
     | "damage"
     | "enter_level"
+    | "gun_shoot"
     | "jump"
     | "level2_bgm"
     | "level3_bgm"
@@ -21,6 +22,7 @@ type AudioName =
     | "run_on_water"
     | "shotting"
     | "story_line_bgm"
+    | "vanish"
     | "warning"
     | "coin"
     | "bomb"
@@ -123,11 +125,13 @@ export default class AudioManager extends cc.Component {
     public craft_turning(loop: boolean = true): void { this.playEffect("craft_turning", loop); }
     public damage(): void { this.playEffect("damage"); }
     public enter_level(): void { this.playEffect("enter_level"); }
+    public gun_shoot(): void { this.playEffect("gun_shoot"); }
     public jump(): void { this.playEffect("jump"); }
     public recharge(): void { this.playEffect("recharge"); }
     public run_on_ground(loop: boolean = true): void { this.playEffect("run_on_ground", loop); }
     public run_on_water(loop: boolean = true): void { this.playEffect("run_on_water", loop); }
     public shotting(): void { this.playEffect("shotting"); }
+    public vanish(): void { this.playEffect("vanish"); }
     public warning(): void { this.playEffect("warning"); }
     public coin(): void { this.playEffect("coin"); }
     public bomb(): void { this.playEffect("bomb"); }

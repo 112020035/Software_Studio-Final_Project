@@ -2,6 +2,7 @@
  * Runtime projectile used by the Level 3 player weapon.
  */
 const { ccclass, property } = cc._decorator;
+import { AudioBroadcast } from "../Audio/AudioEvent";
 
 @ccclass
 export default class Level3PlayerBullet extends cc.Component {

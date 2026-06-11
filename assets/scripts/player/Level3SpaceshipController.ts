@@ -5,6 +5,7 @@
  * altitude by scaling the ship within a configurable range.
  */
 const { ccclass, property } = cc._decorator;
+import { AudioBroadcast } from "../Audio/AudioEvent";
 
 @ccclass
 export default class Level3SpaceshipController extends cc.Component {
@@ -237,6 +238,9 @@ export default class Level3SpaceshipController extends cc.Component {
             this
         );
     }
+    start() {
+        AudioBroadcast.playBgm("level3_bgm");
+    }
 
     onDestroy() {
         cc.systemEvent.off(
@@ -360,6 +364,7 @@ export default class Level3SpaceshipController extends cc.Component {
     }
 
     public takeDamage(damage: number, source?: cc.Node) {
+        AudioBroadcast.playEffect('damage');
         const amount = Math.max(0, damage || 0);
         if (amount <= 0 || this.shieldActive) return;
 

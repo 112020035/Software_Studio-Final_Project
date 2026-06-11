@@ -1,5 +1,5 @@
 import Level3EnemyProjectile from "./Level3EnemyProjectile";
-
+import { AudioBroadcast } from "../Audio/AudioEvent";
 const { ccclass, property } = cc._decorator;
 
 @ccclass
@@ -36,6 +36,7 @@ export default class Level3EnemyShip extends cc.Component {
     private fireTimer = 0;
     private playerSearchTimer = 0;
     private contactCooldown = 0;
+    private lastPlayerPosition: cc.Vec2 = null;
 
     onLoad() {
         cc.director.getCollisionManager().enabled = true;
@@ -57,16 +58,29 @@ export default class Level3EnemyShip extends cc.Component {
                 this.playerSearchTimer = 0.5;
                 this.player = this.findPlayer();
             }
+            this.lastPlayerPosition = null;
             return;
         }
 
-        const enemyWorld = this.node.convertToWorldSpaceAR(cc.Vec2.ZERO);
         const playerWorld = this.player.convertToWorldSpaceAR(cc.Vec2.ZERO);
-        const toPlayer = playerWorld.sub(enemyWorld);
-        const distance = toPlayer.mag();
+
+        // 同步玩家 Y 軸位移，確保敵人始終維持在玩家前方
+        if (this.lastPlayerPosition) {
+            const playerDeltaY = playerWorld.y - this.lastPlayerPosition.y;
+            const currentWorld = this.node.convertToWorldSpaceAR(cc.Vec2.ZERO);
+            this.setWorldPosition(cc.v2(currentWorld.x, currentWorld.y + playerDeltaY));
+        }
+        this.lastPlayerPosition = playerWorld;
+
+        // 移動目標：玩家上方 140 單位，讓玩家容易從下方瞄準
+        const targetWorld = cc.v2(playerWorld.x, playerWorld.y + 140);
+
+        const enemyWorld = this.node.convertToWorldSpaceAR(cc.Vec2.ZERO);
+        const toTarget = targetWorld.sub(enemyWorld);
+        const distance = toTarget.mag();
 
         if (distance > 0.001) {
-            const direction = toPlayer.normalize();
+            const direction = toTarget.normalize();
             const distanceError = distance - this.preferredDistance;
             const moveDirection = distanceError >= 0 ? 1 : -1;
             const step = Math.min(
@@ -88,11 +102,13 @@ export default class Level3EnemyShip extends cc.Component {
             && this.fireTimer >= Math.max(0.1, this.fireInterval)
         ) {
             this.fireTimer = 0;
+            // 子彈仍然瞄準玩家實際位置
             this.fireAt(playerWorld);
         }
     }
 
     public takeDamage(amount: number) {
+        AudioBroadcast.playEffect('vanish');
         this.health -= Math.max(0, amount || 0);
         if (this.health <= 0 && this.node.isValid) {
             this.node.destroy();
@@ -115,7 +131,7 @@ export default class Level3EnemyShip extends cc.Component {
 
     private fireAt(playerWorld: cc.Vec2) {
         if (!this.projectilePrefab || !this.node.parent) return;
-
+        AudioBroadcast.playEffect('shotting');
         const projectileNode = cc.instantiate(this.projectilePrefab);
         this.node.parent.addChild(projectileNode);
 

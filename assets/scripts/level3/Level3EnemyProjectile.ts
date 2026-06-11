@@ -17,6 +17,7 @@ export default class Level3EnemyProjectile extends cc.Component {
     private velocity = cc.v2();
     private elapsed = 0;
     private launched = false;
+    private playerNode: cc.Node = null;
 
     onLoad() {
         cc.director.getCollisionManager().enabled = true;
@@ -47,6 +48,42 @@ export default class Level3EnemyProjectile extends cc.Component {
 
         this.node.x += this.velocity.x * dt;
         this.node.y += this.velocity.y * dt;
+
+        if (!this.playerNode || !this.playerNode.isValid) {
+            this.playerNode = cc.find("Player");
+        }
+        if (this.playerNode) {
+            this.tryHitPlayer();
+        }
+    }
+
+    private tryHitPlayer() {
+        const myWorld = this.node.convertToWorldSpaceAR(cc.Vec2.ZERO);
+        const playerWorld = this.playerNode.convertToWorldSpaceAR(cc.Vec2.ZERO);
+        const dx = myWorld.x - playerWorld.x;
+        const dy = myWorld.y - playerWorld.y;
+
+        const playerScale = Math.max(
+            Math.abs(this.playerNode.scaleX),
+            Math.abs(this.playerNode.scaleY)
+        );
+        const playerCol = this.playerNode.getComponent(cc.CircleCollider);
+        const playerRadius = playerCol ? playerCol.radius * playerScale : 20;
+        const hitDist = this.collisionRadius + playerRadius;
+
+        if (dx * dx + dy * dy >= hitDist * hitDist) return;
+
+        const comps = this.playerNode.getComponents(cc.Component);
+        for (const comp of comps) {
+            const receiver = comp as any;
+            if (typeof receiver.takeDamage === "function") {
+                receiver.takeDamage(this.damage, this.node);
+                break;
+            }
+        }
+
+        this.launched = false;
+        this.node.destroy();
     }
 
     onCollisionEnter(other: cc.Collider) {

@@ -2,6 +2,7 @@
  * Spawns Level 3 player bullets when Level3SpaceshipController emits fire.
  */
 import Level3PlayerBullet from "./Level3PlayerBullet";
+import { AudioBroadcast } from "../Audio/AudioEvent";
 
 const { ccclass, property } = cc._decorator;
 
@@ -127,6 +128,7 @@ export default class Level3WeaponShooter extends cc.Component {
             this.bulletLifetime,
             this.bulletDamage
         );
+        AudioBroadcast.playEffect('gun_shoot');
         this.activeBullets += 1;
     }
 
