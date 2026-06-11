@@ -15,8 +15,8 @@ export default class ExploreCtrl extends cc.Component {
     @property([cc.Node]) levelEntries: cc.Node[] = [];   // 拖入 entry1, entry2, entry3
     @property([cc.Node]) promptLevels: cc.Node[] = [];   // 對應三個提示節點
 
-    @property thrust:            number = 200;
-    @property rotateSpeed:       number = 100;
+    @property thrust:            number = 180;
+    @property rotateSpeed:       number = 80;
     @property damping:           number = 0.994;
     @property interactDistance:  number = 100;
     @property angularDamping:  number = 0.92;   // 旋轉慣性阻尼（0~1，越大越滑）
@@ -47,6 +47,16 @@ export default class ExploreCtrl extends cc.Component {
 
     // 新增一個變數來追蹤是否正在飛行，避免重複播放音效
     private isCraftFlying: boolean = false;
+
+    // 追蹤目前開啟的 level prompt 索引（-1 表示無）
+    private activePromptIndex: number = -1;
+
+    // 追蹤 prompt 是否開啟，用來凍結畫面
+    private isPromptOpen: boolean = false;
+
+    // 關閉 prompt 後的冷卻時間（秒），防止立即重新觸發
+    private readonly PROMPT_COOLDOWN = 3;
+    private promptCooldownTimer: number = 0;
 
     // 私有方法：統一判斷翻轉狀態
     private isFlipped(): boolean {
@@ -100,16 +110,28 @@ export default class ExploreCtrl extends cc.Component {
         const playerCollider = this.player.getComponent("PlayerCollider") as any;
         if (playerCollider) {
             playerCollider.onEnterSpaceship = () => {
-                if (this.promptInventory) this.promptInventory.active = true;
+                if (this.promptCooldownTimer > 0) return;
+                if (this.promptInventory) {
+                    this.promptInventory.active = true;
+                    this.freezeGame();
+                }
             };
             playerCollider.onExitSpaceship = () => {
                 if (this.promptInventory) this.promptInventory.active = false;
             };
             playerCollider.onEnterLevel = (index: number) => {
-                if (this.promptLevels[index]) this.promptLevels[index].active = true;
+                if (this.promptCooldownTimer > 0) return;
+                if (this.promptLevels[index]) {
+                    this.promptLevels[index].active = true;
+                    this.activePromptIndex = index;
+                    this.freezeGame();
+                }
             };
             playerCollider.onExitLevel = (index: number) => {
-                if (this.promptLevels[index]) this.promptLevels[index].active = false;
+                if (this.promptLevels[index]) {
+                    this.promptLevels[index].active = false;
+                    this.activePromptIndex = -1;
+                }
             };
         }
 
@@ -131,7 +153,6 @@ export default class ExploreCtrl extends cc.Component {
 
     private onKeyDown(e: cc.Event.EventKeyboard) {
         this.keys.add(e.keyCode);
-        if (e.keyCode === cc.macro.KEY.e) this.tryInteract();
     }
 
     private onKeyUp(e: cc.Event.EventKeyboard) {
@@ -146,6 +167,10 @@ export default class ExploreCtrl extends cc.Component {
 
     update(dt: number) {
         if (!this.player || !this.rb) return;
+        if (this.isPromptOpen) return;   // prompt 開啟時凍結所有移動
+
+        // 冷卻倒數
+        if (this.promptCooldownTimer > 0) this.promptCooldownTimer -= dt;
 
         // ── 旋轉 + 側向推力 ───────────────────────
         let turning = false;
@@ -311,25 +336,69 @@ export default class ExploreCtrl extends cc.Component {
         col.apply();
     }
 
-    private tryInteract() {
-        if (!this.player) return;
-        const px = this.player.x;
-        const py = this.player.y;
+    // ── Freeze / Unfreeze ────────────────────────────────────
 
-        // Spaceship：仍用 prompt 顯示狀態判斷
-        if (this.promptInventory?.active) {
-            cc.director.loadScene("Inventory");
-            return;
+    private freezeGame() {
+        if (this.isPromptOpen) return;
+        this.isPromptOpen = true;
+
+        if (this.rb) {
+            this.rb.linearVelocity  = cc.v2(0, 0);
+            this.rb.angularVelocity = 0;
+            this.rb.gravityScale    = 0;                       // 關閉重力，避免繼續下墜
+            this.rb.type            = cc.RigidBodyType.Static; // 完全靜態，物理不再更新
+        }
+        this.angularVelocity = 0;
+
+        // 停止飛行音效
+        if (this.isCraftFlying) {
+            this.isCraftFlying = false;
+            AudioBroadcast.stopEffect("craft_flying");
+        }
+        // 清掉按鍵狀態，避免 prompt 關閉後殘留按鍵繼續推力
+        this.keys.clear();
+    }
+
+    private unfreezeGame() {
+        if (!this.isPromptOpen) return;
+        this.isPromptOpen = false;
+
+        if (this.rb) {
+            this.rb.type         = cc.RigidBodyType.Dynamic; // 還原動態
+            this.rb.gravityScale = 1;                        // 還原重力
         }
 
-        // Entry：找到目前顯示中的 prompt
-        for (let i = 0; i < this.promptLevels.length; i++) {
-            if (this.promptLevels[i]?.active) {
-                AudioBroadcast.playEffect("enter_level");
-                this.enterLevel(i + 1);
-                return;
-            }
+        // 啟動冷卻，3 秒內不再觸發 prompt
+        this.promptCooldownTimer = this.PROMPT_COOLDOWN;
+    }
+
+    // ── 按鈕 Click Event 回調 ────────────────────────────────
+
+    /** 進入背包（Inventory prompt 上的「進入」按鈕綁定此方法） */
+    public onClickEnterInventory() {
+        cc.director.loadScene("Inventory");
+    }
+
+    /** 關閉背包 prompt（「離開」按鈕綁定此方法） */
+    public onClickCloseInventory() {
+        if (this.promptInventory) this.promptInventory.active = false;
+        this.unfreezeGame();
+    }
+
+    /** 進入關卡（各 level prompt 上的「進入」按鈕綁定此方法） */
+    public onClickEnterLevel() {
+        if (this.activePromptIndex < 0) return;
+        AudioBroadcast.playEffect("enter_level");
+        this.enterLevel(this.activePromptIndex + 1);
+    }
+
+    /** 關閉關卡 prompt（「離開」按鈕綁定此方法） */
+    public onClickCloseLevel() {
+        if (this.activePromptIndex >= 0 && this.promptLevels[this.activePromptIndex]) {
+            this.promptLevels[this.activePromptIndex].active = false;
         }
+        this.activePromptIndex = -1;
+        this.unfreezeGame();
     }
 
     private enterLevel(level: number) {
