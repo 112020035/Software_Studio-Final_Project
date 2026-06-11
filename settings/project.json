@@ -30,6 +30,44 @@
       false,
       false,
       false
+    ],
+    [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
+    [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
+    [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
+    [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
     ]
   ],
   "excluded-modules": [
@@ -58,5 +96,12 @@
       "enable": false
     }
   },
-  "start-scene": "e25095ac-0544-416d-b6a7-415f84b1f7cd"
+  "start-scene": "current",
+  "group-list": [
+    "default",
+    "Player",
+    "Ground",
+    "Entry",
+    "Spaceship"
+  ]
 }
