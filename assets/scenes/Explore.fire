@@ -5111,7 +5111,7 @@
     },
     "component": "",
     "_componentId": "3408elB4gpC5ZeSuTK3tKCF",
-    "handler": "onClickEnterLevel",
+    "handler": "onClickEnterInventory",
     "customEventData": ""
   },
   {

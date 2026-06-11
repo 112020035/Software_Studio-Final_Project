@@ -574,8 +574,8 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        348.148,
-        -240.518,
+        330,
+        -240,
         0,
         0,
         0,
@@ -884,8 +884,8 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        16.592,
-        61.629,
+        0,
+        70,
         0,
         0,
         0,
@@ -1050,8 +1050,8 @@
         0,
         0,
         1,
-        0.5,
-        0.35,
+        0.8,
+        0.8,
         0
       ]
     },
@@ -1244,8 +1244,8 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        20,
-        -68.741,
+        0,
+        -95,
         0,
         0,
         0,
@@ -1410,8 +1410,8 @@
         0,
         0,
         1,
-        0.5,
-        0.35,
+        0.8,
+        0.8,
         0
       ]
     },
@@ -1562,15 +1562,15 @@
     "_opacity": 255,
     "_color": {
       "__type__": "cc.Color",
-      "r": 240,
-      "g": 203,
-      "b": 124,
+      "r": 255,
+      "g": 255,
+      "b": 255,
       "a": 255
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 228.32,
-      "height": 50.4
+      "width": 200,
+      "height": 100
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -1581,8 +1581,8 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        21.333,
-        -7.111,
+        0,
+        -30,
         0,
         0,
         0,
@@ -1621,21 +1621,23 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_string": "Sound Effect",
-    "_N$string": "Sound Effect",
-    "_fontSize": 40,
-    "_lineHeight": 40,
+    "_string": "SOUND\nEFFECT",
+    "_N$string": "SOUND\nEFFECT",
+    "_fontSize": 120,
+    "_lineHeight": 50,
     "_enableWrapText": true,
-    "_N$file": null,
-    "_isSystemFontUsed": true,
+    "_N$file": {
+      "__uuid__": "ea70a699-642b-4006-be33-9ba2d616284c"
+    },
+    "_isSystemFontUsed": false,
     "_spacingX": 0,
     "_batchAsBitmap": false,
     "_styleFlags": 0,
     "_underlineHeight": 0,
     "_N$horizontalAlign": 1,
-    "_N$verticalAlign": 1,
+    "_N$verticalAlign": 0,
     "_N$fontFamily": "Arial",
-    "_N$overflow": 0,
+    "_N$overflow": 3,
     "_N$cacheMode": 0,
     "_id": "1cCjs/kctNq7zxtRKFKXlr"
   },
@@ -1657,15 +1659,15 @@
     "_opacity": 255,
     "_color": {
       "__type__": "cc.Color",
-      "r": 240,
-      "g": 203,
-      "b": 124,
+      "r": 255,
+      "g": 255,
+      "b": 255,
       "a": 255
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 91.11,
-      "height": 50.4
+      "width": 100,
+      "height": 40
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -1676,8 +1678,8 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        18.963,
-        116.148,
+        0,
+        120,
         0,
         0,
         0,
@@ -1718,19 +1720,21 @@
     "_dstBlendFactor": 771,
     "_string": "BGM",
     "_N$string": "BGM",
-    "_fontSize": 40,
+    "_fontSize": 120,
     "_lineHeight": 40,
     "_enableWrapText": true,
-    "_N$file": null,
-    "_isSystemFontUsed": true,
+    "_N$file": {
+      "__uuid__": "ea70a699-642b-4006-be33-9ba2d616284c"
+    },
+    "_isSystemFontUsed": false,
     "_spacingX": 0,
     "_batchAsBitmap": false,
     "_styleFlags": 0,
     "_underlineHeight": 0,
     "_N$horizontalAlign": 1,
-    "_N$verticalAlign": 1,
+    "_N$verticalAlign": 0,
     "_N$fontFamily": "Arial",
-    "_N$overflow": 0,
+    "_N$overflow": 3,
     "_N$cacheMode": 0,
     "_id": "54FMrv/F5OqpSBeFNK1MRM"
   },

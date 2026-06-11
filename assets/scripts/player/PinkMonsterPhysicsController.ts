@@ -838,7 +838,7 @@ cc.Class({
 
         this.die();
         this.scheduleOnce(function () {
-            cc.director.loadScene('LevelResult');
+            cc.director.loadScene('GameOver');
         }, 0.8);
     },
 
