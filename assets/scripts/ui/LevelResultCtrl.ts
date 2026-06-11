@@ -1,5 +1,5 @@
 import GameData from "../gameflow/GameData";
-
+import { AudioBroadcast } from "../Audio/AudioEvent";
 const { ccclass, property } = cc._decorator;
 
 @ccclass
@@ -18,6 +18,7 @@ export default class LevelResultCtrl extends cc.Component {
     private readonly QUALITY_NAMES = ["GOOD", "EXCELLENT", "PERFECT"];
 
     start() {
+        AudioBroadcast.playBgm("inventory_bgm");
         const levelIndex = GameData.currentLevel - 1;
         const quality    = GameData.partQualities[levelIndex] ?? 0;
 
@@ -60,6 +61,7 @@ export default class LevelResultCtrl extends cc.Component {
     }
 
     onContinue() {
+        AudioBroadcast.playEffect("btn_press");
         cc.director.loadScene("Explore");
     }
 }

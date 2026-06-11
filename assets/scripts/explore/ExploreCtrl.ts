@@ -376,11 +376,13 @@ export default class ExploreCtrl extends cc.Component {
 
     /** 進入背包（Inventory prompt 上的「進入」按鈕綁定此方法） */
     public onClickEnterInventory() {
+        AudioBroadcast.playEffect("btn_press");
         cc.director.loadScene("Inventory");
     }
 
     /** 關閉背包 prompt（「離開」按鈕綁定此方法） */
     public onClickCloseInventory() {
+        AudioBroadcast.playEffect("btn_press");
         if (this.promptInventory) this.promptInventory.active = false;
         this.unfreezeGame();
     }
@@ -402,6 +404,7 @@ export default class ExploreCtrl extends cc.Component {
     }
 
     private enterLevel(level: number) {
+        AudioBroadcast.playEffect("btn_press");
         switch (level) {
             case 1: 
                 GameData.enterlevel(level);

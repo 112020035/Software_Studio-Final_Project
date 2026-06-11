@@ -1,11 +1,10 @@
 import GameData from "../gameflow/GameData";
-
+import AudioBroadcast from "../Audio/AudioBroadcast";
 const { ccclass, property } = cc._decorator;
 
 @ccclass
 export default class GameOverCtrl extends cc.Component {
     start() {
-
         this.bindButton("Canvas/RetryButton", "onRetry");
         this.bindButton("Canvas/BackButton", "onBack");
     }
@@ -21,6 +20,7 @@ export default class GameOverCtrl extends cc.Component {
     }
 
     onRetry() {
+        AudioBroadcast.playEffect("btn_press");
         switch (GameData.currentLevel) {
             case 1: 
                 cc.director.loadScene("Level1");
@@ -34,6 +34,7 @@ export default class GameOverCtrl extends cc.Component {
         }
     }
     onBack() {
+        AudioBroadcast.playEffect("btn_press");
         cc.director.loadScene("Explore");
     }
 }

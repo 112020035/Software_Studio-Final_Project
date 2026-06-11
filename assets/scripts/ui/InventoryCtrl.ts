@@ -1,5 +1,5 @@
 import GameData from "../gameflow/GameData";
-
+import { AudioBroadcast } from "../Audio/AudioEvent";
 const { ccclass, property } = cc._decorator;
 
 @ccclass
@@ -17,6 +17,7 @@ export default class InventoryCtrl extends cc.Component {
     partFrames: cc.SpriteFrame[] = [];
 
     start() {
+        AudioBroadcast.playBgm("inventory_bgm");
         if (this.itemCountLabel) {
             this.itemCountLabel.string = `已收集道具：${GameData.itemCount}`;
         }
@@ -58,6 +59,7 @@ export default class InventoryCtrl extends cc.Component {
     }
 
     onBack() {
+        AudioBroadcast.playEffect("btn_press");
         cc.director.loadScene("Explore");
     }
 }
