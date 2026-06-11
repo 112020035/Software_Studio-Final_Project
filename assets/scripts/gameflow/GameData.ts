@@ -7,6 +7,7 @@ export default class GameData {
     public static levelTime:   number = 0;
     public static coins:       number = 0;
     public static partQualities: number[] = [-1, -1, -1];
+    public static highQualities: number[] = [-1, -1, -1];
     public static itemCount: number = 0;
     public static currentLevel: number = 1;
     public static isSolo: boolean = true;
@@ -34,6 +35,17 @@ export default class GameData {
             }
         }
         return score;
+    }
+
+    public static updateHighQuality(): number {
+        const index = GameData.currentLevel - 1;
+        const qual_now = GameData.partQualities[index];
+        const qual_high = GameData.highQualities[index];
+        if (index >= 0 && index < 3) {
+            if (qual_now > qual_high) {
+                GameData.highQualities[index] = qual_now;
+            }
+        }
     }
 
     public static reset() {

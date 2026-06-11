@@ -32,7 +32,7 @@ export default class InventoryCtrl extends cc.Component {
         const parts = [this.part1, this.part2, this.part3];
 
         for (let i = 0; i < 3; i++) {
-            const quality = GameData.partQualities[i];
+            const quality = GameData.highQualities[i];
             const sprite  = parts[i];
 
             if (!sprite) continue;

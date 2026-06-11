@@ -13,6 +13,7 @@
  * └── Slide6  (cc.Sprite，顯示第 7 張分鏡圖)
  *
  * 每個 Slide 節點預設 active = false，由腳本控制顯示。
+ * 點擊螢幕換下一張，每張顯示時所有子 Label 會淡入。
  */
 import { AudioBroadcast } from "../Audio/AudioEvent";
 const { ccclass, property } = cc._decorator;
@@ -20,16 +21,18 @@ const { ccclass, property } = cc._decorator;
 @ccclass
 export default class IntroCtrl extends cc.Component {
 
-    /** 每張分鏡停留秒數，依序對應 Slide1～Slide6 */
-    @property([cc.Float])
-    slideDelays: number[] = [5, 5, 5, 5, 5, 5];
+    /** Label 淡入持續秒數 */
+    @property(cc.Float)
+    fadeDuration: number = 1.0;
 
     private slides: cc.Node[] = [];
     private currentIndex: number = 0;
+    private isTweening: boolean = false;
 
     start() {
         // 換BGM
         AudioBroadcast.playBgm("story_line_bgm");
+
         // 收集場景中所有 Slide 節點
         for (let i = 1; i <= 6; i++) {
             const node = cc.find("Canvas/Slide" + i);
@@ -47,7 +50,26 @@ export default class IntroCtrl extends cc.Component {
             return;
         }
 
+        // 監聽點擊事件（掛在 Canvas 上，全螢幕有效）
+        this.node.on(cc.Node.EventType.TOUCH_END, this.onTouchEnd, this);
+
         this.showSlide(0);
+    }
+
+    onDestroy() {
+        this.node.off(cc.Node.EventType.TOUCH_END, this.onTouchEnd, this);
+    }
+
+    private onTouchEnd() {
+        // 淡入動畫進行中不允許連點跳過
+        if (this.isTweening) return;
+
+        const next = this.currentIndex + 1;
+        if (next < this.slides.length) {
+            this.showSlide(next);
+        } else {
+            cc.director.loadScene("Tutorial");
+        }
     }
 
     private showSlide(index: number) {
@@ -56,15 +78,52 @@ export default class IntroCtrl extends cc.Component {
             s.active = (i === index);
         });
 
-        const delay = this.slideDelays[index] ?? 5;
+        this.currentIndex = index;
 
-        this.scheduleOnce(() => {
-            const next = index + 1;
-            if (next < this.slides.length) {
-                this.showSlide(next);
-            } else {
-                cc.director.loadScene("Tutorial");
-            }
-        }, delay);
+        // 對當前 Slide 下的所有 Label 執行淡入
+        this.fadeInLabels(this.slides[index]);
+    }
+
+    /**
+     * 找出節點樹中所有 cc.Label，將透明度從 0 淡入到原始值
+     */
+    private fadeInLabels(root: cc.Node) {
+        const labels = this.collectLabels(root);
+        if (labels.length === 0) return;
+
+        this.isTweening = true;
+
+        let completed = 0;
+
+        labels.forEach(label => {
+            const originalOpacity = label.opacity > 0 ? label.opacity : 255;
+            label.opacity = 0;
+
+            label.runAction(
+                cc.sequence(
+                    cc.fadeTo(this.fadeDuration, originalOpacity),
+                    cc.callFunc(() => {
+                        completed++;
+                        if (completed >= labels.length) {
+                            this.isTweening = false;
+                        }
+                    })
+                )
+            );
+        });
+    }
+
+    /**
+     * 遞迴收集節點樹下所有帶有 cc.Label 元件的節點
+     */
+    private collectLabels(node: cc.Node): cc.Node[] {
+        const result: cc.Node[] = [];
+        if (node.getComponent(cc.Label)) {
+            result.push(node);
+        }
+        node.children.forEach(child => {
+            result.push(...this.collectLabels(child));
+        });
+        return result;
     }
 }

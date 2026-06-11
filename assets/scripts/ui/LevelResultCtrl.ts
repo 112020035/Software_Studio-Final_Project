@@ -21,6 +21,7 @@ export default class LevelResultCtrl extends cc.Component {
         AudioBroadcast.playBgm("inventory_bgm");
         const levelIndex = GameData.currentLevel - 1;
         const quality    = GameData.partQualities[levelIndex] ?? 0;
+        GameData.updateHighQuality();
 
         // 更新前先記住舊的最高分
         const prevBest  = GameData.bestScores[levelIndex];
