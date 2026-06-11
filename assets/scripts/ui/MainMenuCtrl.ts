@@ -62,7 +62,7 @@ export default class MainMenuCtrl extends cc.Component {
     }
 
     onStartGame() {
-        cc.director.loadScene("Intro");
+        cc.director.loadScene("Login");
     }
 
     onOpenSetting() {

@@ -1,5 +1,5 @@
 const { ccclass, property } = cc._decorator;
-
+import { AudioBroadcast } from "../Audio/AudioEvent";
 declare const firebase: any;
 
 const firebaseConfig = {
@@ -36,13 +36,13 @@ export default class LoginController extends cc.Component {
         this.errorLabel.string  = '';
         this.loadingNode.active = false;
     }
-
+    // 登入按鈕事件
     onLoginClick() {
         const email    = this.emailInput.string.trim();
         const password = this.passwordInput.string;
-
+        AudioBroadcast.playEffect("btn_press");
         if (!email || !password) {
-            this.errorLabel.string = '請填寫帳號和密碼';
+            this.errorLabel.string = '請填寫帳號密碼';
             return;
         }
 
@@ -53,7 +53,7 @@ export default class LoginController extends cc.Component {
             .signInWithEmailAndPassword(email, password)
             .then((userCredential: any) => {
                 console.log('登入成功:', userCredential.user.uid);
-                cc.director.loadScene('MainMenu');
+                cc.director.loadScene('Intro');
             })
             .catch((error: any) => {
                 this.errorLabel.string = this.parseError(error.code);
@@ -62,13 +62,13 @@ export default class LoginController extends cc.Component {
                 this.loadingNode.active = false;
             });
     }
-
+    // 註冊按鈕事件
     onRegisterClick() {
         const email    = this.emailInput.string.trim();
         const password = this.passwordInput.string;
-
+        AudioBroadcast.playEffect("btn_press");
         if (!email || !password) {
-            this.errorLabel.string = '請填寫帳號和密碼';
+            this.errorLabel.string = '請填寫帳號密碼';
             return;
         }
 
@@ -79,7 +79,7 @@ export default class LoginController extends cc.Component {
             .createUserWithEmailAndPassword(email, password)
             .then((userCredential: any) => {
                 console.log('註冊成功:', userCredential.user.uid);
-                cc.director.loadScene('MainMenu');
+                cc.director.loadScene('Intro');
             })
             .catch((error: any) => {
                 this.errorLabel.string = this.parseError(error.code);
