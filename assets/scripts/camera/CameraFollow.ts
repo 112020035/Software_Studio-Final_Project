@@ -42,6 +42,9 @@ cc.Class({
         useViewportEdgeBounds: true,
         leftEdgeUsesTargetParent: true,
         leftEdgeX: -200,
+        useRightViewportEdgeBound: false,
+        rightEdgeUsesTargetParent: true,
+        rightEdgeX: 1920,
         debugBounds: false,
         minX: -99999,
         maxX: 99999,
@@ -53,6 +56,17 @@ cc.Class({
     onLoad: function () {
         if (!this.target && this.targets.length === 0 && this.autoFindTargetName) {
             this.target = cc.find(this.autoFindTargetName);
+        }
+
+        var scene = cc.director.getScene();
+        if (scene && scene.name === 'Level3') {
+            this.useBounds = true;
+            this.useViewportEdgeBounds = true;
+            this.leftEdgeUsesTargetParent = true;
+            this.leftEdgeX = 0;
+            this.useRightViewportEdgeBound = true;
+            this.rightEdgeUsesTargetParent = true;
+            this.rightEdgeX = 1920;
         }
     },
 
@@ -69,10 +83,11 @@ cc.Class({
         var desiredX = activeFollowX ? center.x + this.offset.x : this.node.x;
         var desiredY = activeFollowY ? center.y + this.offset.y : this.node.y;
         var minCameraX = this.getMinCameraX();
+        var maxCameraX = this.getMaxCameraX();
         this.logBoundsOnce(minCameraX);
 
         if (this.useBounds) {
-            desiredX = cc.misc.clampf(desiredX, minCameraX, this.maxX);
+            desiredX = cc.misc.clampf(desiredX, minCameraX, maxCameraX);
             desiredY = cc.misc.clampf(desiredY, this.minY, this.maxY);
         }
 
@@ -81,7 +96,7 @@ cc.Class({
         var nextY = cc.misc.lerp(this.node.y, desiredY, t);
 
         if (this.useBounds) {
-            nextX = cc.misc.clampf(nextX, minCameraX, this.maxX);
+            nextX = cc.misc.clampf(nextX, minCameraX, maxCameraX);
             nextY = cc.misc.clampf(nextY, this.minY, this.maxY);
         }
 
@@ -119,6 +134,14 @@ cc.Class({
         return this.getLeftEdgeInCameraParent() + this.getViewportHalfWidth();
     },
 
+    getMaxCameraX: function () {
+        if (!this.useRightViewportEdgeBound) {
+            return this.maxX;
+        }
+
+        return this.getRightEdgeInCameraParent() - this.getViewportHalfWidth();
+    },
+
     // 將左邊界轉換到鏡頭父節點的座標系。
     getLeftEdgeInCameraParent: function () {
         if (!this.leftEdgeUsesTargetParent || !this.target || !this.target.parent || !this.node.parent) {
@@ -126,6 +149,15 @@ cc.Class({
         }
 
         var worldPos = this.target.parent.convertToWorldSpaceAR(cc.v2(this.leftEdgeX, 0));
+        return this.node.parent.convertToNodeSpaceAR(worldPos).x;
+    },
+
+    getRightEdgeInCameraParent: function () {
+        if (!this.rightEdgeUsesTargetParent || !this.target || !this.target.parent || !this.node.parent) {
+            return this.rightEdgeX;
+        }
+
+        var worldPos = this.target.parent.convertToWorldSpaceAR(cc.v2(this.rightEdgeX, 0));
         return this.node.parent.convertToNodeSpaceAR(worldPos).x;
     },
 

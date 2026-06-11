@@ -511,10 +511,44 @@
     "doubleJumpDustTexture": {
       "__uuid__": "e9d2eda5-c059-4d6b-9a31-9e93d4133c32"
     },
-    "bombPrefab": null,
-    "bombFrame": null,
-    "bombActiveFrame": null,
-    "explosionFrames": [],
+    "bombPrefab": {
+      "__uuid__": "b501701e-efea-4c0a-9f7a-2cd27e369687"
+    },
+    "bombFrame": {
+      "__uuid__": "d58863ce-1a4f-43a4-8e1d-71434b28e09e"
+    },
+    "bombActiveFrame": {
+      "__uuid__": "9b51191f-3a0d-4886-ade2-db80ed7b9239"
+    },
+    "explosionFrames": [
+      {
+        "__uuid__": "47226a2a-c62e-4282-ada6-087c22cc41ad"
+      },
+      {
+        "__uuid__": "6dc1f008-6eca-43e3-8322-c529723d773a"
+      },
+      {
+        "__uuid__": "78f3bd07-9d17-4ba4-af62-5a68aefb20e4"
+      },
+      {
+        "__uuid__": "2a2015dc-2589-4618-9192-5e15924ef0ef"
+      },
+      {
+        "__uuid__": "39ac2a9c-0ad0-43da-bfb1-43dbde17ebaf"
+      },
+      {
+        "__uuid__": "318e137c-4046-4631-b59f-5567a17e2f44"
+      },
+      {
+        "__uuid__": "9afb1623-060e-4e24-be29-05f831770e49"
+      },
+      {
+        "__uuid__": "dca463f6-8d95-4a89-84fb-c336254b4f5e"
+      },
+      {
+        "__uuid__": "eb6ec121-4d38-4dfe-8b5a-07d935efee3c"
+      }
+    ],
     "bombThrowSpeedX": 260,
     "bombThrowSpeedY": 180,
     "bombThrowOffsetX": 42,
@@ -534,10 +568,10 @@
     "pullGrabDistance": 16,
     "respawnYOffset": 80,
     "climbSpeed": 130,
-    "ladderHorizontalTolerance": 18,
-    "ropeHorizontalTolerance": 40,
+    "ladderHorizontalTolerance": 15,
+    "ropeHorizontalTolerance": 22,
     "ropeCenterPullStrength": 0.25,
-    "ropePlatformSnapDistance": 10,
+    "ropePlatformSnapDistance": 3,
     "ropePlatformExitVerticalSearch": 96,
     "ropePlatformExitHorizontalTolerance": 36,
     "snowAcceleration": 430,
