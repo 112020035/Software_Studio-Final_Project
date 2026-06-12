@@ -7651,7 +7651,7 @@
         "__id__": 77
       }
     ],
-    "thrust": 180,
+    "thrust": 150,
     "rotateSpeed": 80,
     "damping": 0.994,
     "interactDistance": 100,

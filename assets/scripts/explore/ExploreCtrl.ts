@@ -18,7 +18,7 @@ export default class ExploreCtrl extends cc.Component {
     @property([cc.Node]) levelEntries: cc.Node[] = [];   // 拖入 entry1, entry2, entry3
     @property([cc.Node]) promptLevels: cc.Node[] = [];   // 對應三個提示節點
 
-    @property thrust:            number = 180;
+    @property thrust:            number = 150;
     @property rotateSpeed:       number = 80;
     @property damping:           number = 0.994;
     @property interactDistance:  number = 100;

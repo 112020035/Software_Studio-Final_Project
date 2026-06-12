@@ -14,9 +14,16 @@ export default class InventoryCtrl extends cc.Component {
     @property(cc.Sprite) part3: cc.Sprite = null;
     @property(cc.Label)  playerNameLabel: cc.Label = null;
 
+    @property(cc.Label) partLabel1: cc.Label = null;
+    @property(cc.Label) partLabel2: cc.Label = null;
+    @property(cc.Label) partLabel3: cc.Label = null;
+
     // 順序同 LevelResultCtrl：[道具0瑕疵, 道具0一般, 道具0最佳, 道具1瑕疵, ...]
     @property([cc.SpriteFrame])
     partFrames: cc.SpriteFrame[] = [];
+
+    private readonly PART_NAMES = ['主核心晶體', '重力引擎模組', '航行控制核心'];
+    private readonly QUALITY_NAMES = ['老舊的', '普通的', '良好的'];
 
     start() {
         AudioBroadcast.playBgm("inventory_bgm");
@@ -24,13 +31,8 @@ export default class InventoryCtrl extends cc.Component {
 
         // @ts-ignore
         const user = firebase.auth().currentUser;
-        /*if (user) {
-            FirebaseManager.loadGameData(user.uid).then(() => {
-                this.refreshUI(user);
-            });
-        } else {
-            this.refreshUI(null);
-        }*/
+        GameData.loadFromFirestore();
+        this.refreshUI(user)
     }
 
     private refreshUI(user: any) {
@@ -44,7 +46,7 @@ export default class InventoryCtrl extends cc.Component {
             this.playerNameLabel.string = `${user.displayName || user.email.split('@')[0]}的飛船`;
         }
 
-        // 顯示三個道具圖
+        // 顯示三個道具圖（位置不動）
         const parts = [this.part1, this.part2, this.part3];
         for (let i = 0; i < 3; i++) {
             const quality = GameData.highQualities[i];
@@ -62,6 +64,27 @@ export default class InventoryCtrl extends cc.Component {
                 } else {
                     cc.warn(`[InventoryCtrl] partFrames[${frameIndex}] 未設定`);
                 }
+            }
+        }
+
+        // 顯示文字標籤：有效項目依序遞補填入 label slot
+        const slots = [this.partLabel1, this.partLabel2, this.partLabel3];
+        const activeItems: { quality: number, partIndex: number }[] = [];
+        for (let i = 0; i < 3; i++) {
+            const quality = GameData.highQualities[i];
+            if (quality !== -1) {
+                activeItems.push({ quality, partIndex: i });
+            }
+        }
+        for (let s = 0; s < slots.length; s++) {
+            const slot = slots[s];
+            if (!slot) continue;
+            if (s < activeItems.length) {
+                const { quality, partIndex } = activeItems[s];
+                slot.node.active = true;
+                slot.string = `${this.QUALITY_NAMES[quality]}${this.PART_NAMES[partIndex]}`;
+            } else {
+                slot.node.active = false;
             }
         }
     }

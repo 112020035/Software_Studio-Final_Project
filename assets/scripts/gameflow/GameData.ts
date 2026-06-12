@@ -52,7 +52,7 @@ export default class GameData {
     }
 
     public static updateItemCount(): number {
-        GameData.itemCount = GameData.highQualities[0] + GameData.highQualities[1] + GameData.highQualities[2];
+        GameData.itemCount = GameData.highQualities[0] + GameData.highQualities[1] + GameData.highQualities[2] + 3;
     }
 
     public static reset() {

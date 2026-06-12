@@ -1,19 +1,9 @@
 {
-  "group-list": [
-    "default",
-    "Player",
-    "Entry",
-    "Spaceship",
-    "Ground",
-    "Enemy"
+  "migrate-history": [
+    "cloud-function"
   ],
   "collision-matrix": [
     [
-      true,
-      false,
-      false,
-      false,
-      false,
       true
     ],
     [
@@ -27,7 +17,17 @@
     [
       false,
       true,
+      false
+    ],
+    [
       false,
+      true,
+      false,
+      false
+    ],
+    [
+      false,
+      true,
       false,
       false,
       false
@@ -42,15 +42,41 @@
     ],
     [
       false,
-      true,
+      false,
+      false,
       false,
       false,
       false,
       false
     ],
     [
-      true,
-      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
+    [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
+    [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
       false,
       false,
       false,
@@ -91,5 +117,5 @@
     "Spaceship",
     "Home"
   ],
-  "start-scene": "d9bdc159-994e-4d85-829c-27b8ed03d399"
+  "start-scene": "e25095ac-0544-416d-b6a7-415f84b1f7cd"
 }
