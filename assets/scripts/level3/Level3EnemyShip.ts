@@ -5,6 +5,11 @@ const { ccclass, property } = cc._decorator;
 
 @ccclass
 export default class Level3EnemyShip extends cc.Component {
+    private static projectilePools: {
+        [prefabKey: string]: cc.NodePool;
+    } = {};
+    private static projectilePoolScene: cc.Scene = null;
+
     @property({
         tooltip: "0-3 overrides the enemy type used by the Level 3 kill HUD. -1 infers it from the node name."
     })
@@ -206,7 +211,7 @@ export default class Level3EnemyShip extends cc.Component {
     private fireAt(playerWorld: cc.Vec2) {
         if (!this.projectilePrefab || !this.node.parent) return;
         AudioBroadcast.playEffect('shotting');
-        const projectileNode = cc.instantiate(this.projectilePrefab);
+        const projectileNode = this.getProjectileFromPool();
         this.node.parent.addChild(projectileNode);
 
         const source = this.firePoint && this.firePoint.isValid
@@ -225,7 +230,57 @@ export default class Level3EnemyShip extends cc.Component {
             return;
         }
 
+        const prefabKey = this.getProjectilePrefabKey();
+        projectile.setRecycleCallback(projectileNodeToRecycle => {
+            Level3EnemyShip.recycleProjectile(
+                prefabKey,
+                projectileNodeToRecycle
+            );
+        });
         projectile.launch(playerWorld.sub(sourceWorld));
+    }
+
+    private getProjectileFromPool(): cc.Node {
+        Level3EnemyShip.ensureProjectilePoolsForCurrentScene();
+        const prefabKey = this.getProjectilePrefabKey();
+        let pool = Level3EnemyShip.projectilePools[prefabKey];
+
+        if (!pool) {
+            pool = new cc.NodePool();
+            Level3EnemyShip.projectilePools[prefabKey] = pool;
+        }
+
+        return pool.size() > 0
+            ? pool.get()
+            : cc.instantiate(this.projectilePrefab);
+    }
+
+    private getProjectilePrefabKey(): string {
+        const prefab = this.projectilePrefab as any;
+        return prefab._uuid || prefab.name || "enemy-projectile";
+    }
+
+    private static recycleProjectile(prefabKey: string, node: cc.Node) {
+        if (!node || !node.isValid) return;
+
+        Level3EnemyShip.ensureProjectilePoolsForCurrentScene();
+        let pool = Level3EnemyShip.projectilePools[prefabKey];
+        if (!pool) {
+            pool = new cc.NodePool();
+            Level3EnemyShip.projectilePools[prefabKey] = pool;
+        }
+        pool.put(node);
+    }
+
+    private static ensureProjectilePoolsForCurrentScene() {
+        const scene = cc.director.getScene();
+        if (Level3EnemyShip.projectilePoolScene === scene) return;
+
+        Object.keys(Level3EnemyShip.projectilePools).forEach(key => {
+            Level3EnemyShip.projectilePools[key].clear();
+        });
+        Level3EnemyShip.projectilePools = {};
+        Level3EnemyShip.projectilePoolScene = scene;
     }
 
     private ensureCollider() {

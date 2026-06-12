@@ -177,7 +177,28 @@ cc.Class({
             this.elapsedTime -= 1;
             this.remainingTime -= 1;
             this.updateCounter('time', this.remainingTime);
+
+            if (this.remainingTime <= 0) {
+                this.triggerTimeOut();
+                return;
+            }
         }
+    },
+
+    triggerTimeOut: function () {
+        if (this.gameOverTriggered) {
+            return;
+        }
+
+        this.gameOverTriggered = true;
+        this.frozen = true;
+        this.isRestoringLife = false;
+        this.remainingTime = 0;
+        this.updateCounter('time', 0);
+
+        this.scheduleOnce(function () {
+            cc.director.loadScene('GameOver');
+        }, 0);
     },
 
     lateUpdate: function () {

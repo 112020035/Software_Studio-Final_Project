@@ -37,10 +37,24 @@ export default class Level3EnemyProjectile extends cc.Component {
     private explosionElapsed = 0;
     private explosionFrameIndex = 0;
     private playerNode: cc.Node = null;
+    private recycleCallback: (projectile: cc.Node) => void = null;
+    private defaultSpriteFrame: cc.SpriteFrame = null;
+    private defaultScaleX = 1;
+    private defaultScaleY = 1;
 
     onLoad() {
         cc.director.getCollisionManager().enabled = true;
         this.ensureCollider();
+        const sprite = this.getComponent(cc.Sprite);
+        this.defaultSpriteFrame = sprite ? sprite.spriteFrame : null;
+        this.defaultScaleX = this.node.scaleX;
+        this.defaultScaleY = this.node.scaleY;
+    }
+
+    public setRecycleCallback(
+        recycleCallback: (projectile: cc.Node) => void
+    ) {
+        this.recycleCallback = recycleCallback;
     }
 
     public launch(direction: cc.Vec2) {
@@ -50,10 +64,23 @@ export default class Level3EnemyProjectile extends cc.Component {
         this.velocity = normalized.mul(this.speed);
         this.elapsed = 0;
         this.launched = true;
+        this.exploding = false;
+        this.explosionElapsed = 0;
+        this.explosionFrameIndex = 0;
         this.node.active = true;
+        this.node.scaleX = this.defaultScaleX;
+        this.node.scaleY = this.defaultScaleY;
         this.node.angle = -cc.misc.radiansToDegrees(
             Math.atan2(normalized.x, normalized.y)
         );
+
+        const collider = this.getComponent(cc.CircleCollider);
+        if (collider) collider.enabled = true;
+
+        const sprite = this.getComponent(cc.Sprite);
+        if (sprite && this.defaultSpriteFrame) {
+            sprite.spriteFrame = this.defaultSpriteFrame;
+        }
     }
 
     update(dt: number) {
@@ -66,7 +93,7 @@ export default class Level3EnemyProjectile extends cc.Component {
 
         this.elapsed += dt;
         if (this.elapsed >= this.lifetime) {
-            this.node.destroy();
+            this.recycle();
             return;
         }
 
@@ -232,7 +259,7 @@ export default class Level3EnemyProjectile extends cc.Component {
 
         const sprite = this.getComponent(cc.Sprite);
         if (!sprite || this.explosionFrames.length === 0) {
-            this.node.destroy();
+            this.recycle();
             return;
         }
 
@@ -244,7 +271,7 @@ export default class Level3EnemyProjectile extends cc.Component {
     private updateExplosion(dt: number) {
         const sprite = this.getComponent(cc.Sprite);
         if (!sprite || this.explosionFrames.length === 0) {
-            this.node.destroy();
+            this.recycle();
             return;
         }
 
@@ -256,7 +283,7 @@ export default class Level3EnemyProjectile extends cc.Component {
             this.explosionFrameIndex += 1;
 
             if (this.explosionFrameIndex >= this.explosionFrames.length) {
-                this.node.destroy();
+                this.recycle();
                 return;
             }
 
@@ -271,5 +298,26 @@ export default class Level3EnemyProjectile extends cc.Component {
         if (!collider) collider = this.node.addComponent(cc.CircleCollider);
         collider.radius = Math.max(1, this.collisionRadius);
         collider.enabled = true;
+    }
+
+    private recycle() {
+        if (!this.node || !this.node.isValid) return;
+
+        this.launched = false;
+        this.exploding = false;
+        this.elapsed = 0;
+        this.explosionElapsed = 0;
+        this.explosionFrameIndex = 0;
+        this.velocity = cc.v2();
+        this.playerNode = null;
+
+        const collider = this.getComponent(cc.CircleCollider);
+        if (collider) collider.enabled = false;
+
+        if (this.recycleCallback) {
+            this.recycleCallback(this.node);
+        } else {
+            this.node.destroy();
+        }
     }
 }
