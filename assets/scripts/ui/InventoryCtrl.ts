@@ -22,15 +22,16 @@ export default class InventoryCtrl extends cc.Component {
         AudioBroadcast.playBgm("inventory_bgm");
         this.bindButton("Canvas/BackButton", "onBack");
 
-        // @ts-ignore
-        const user = firebase.auth().currentUser;
-        /*if (user) {
-            FirebaseManager.loadGameData(user.uid).then(() => {
-                this.refreshUI(user);
-            });
-        } else {
-            this.refreshUI(null);
-        }*/
+        const user = FirebaseManager.auth.currentUser;
+        this.refreshUI(user);
+        this.loadLatestInventory(user);
+    }
+
+    private async loadLatestInventory(user: any) {
+        if (!user) return;
+
+        await GameData.loadFromFirestore();
+        this.refreshUI(user);
     }
 
     private refreshUI(user: any) {

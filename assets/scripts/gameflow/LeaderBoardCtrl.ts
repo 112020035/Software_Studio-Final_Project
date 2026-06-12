@@ -12,6 +12,12 @@ export default class LeaderboardCtrl extends cc.Component {
     @property(cc.Node)   backButton: cc.Node   = null;
 
     start() {
+        if (!this.loadingNode) {
+            this.loadingNode = cc.find("Canvas/Loading");
+        }
+        this.setTitle("Loading");
+        this.layoutEntries();
+
         if (this.backButton) {
             this.backButton.on(cc.Node.EventType.TOUCH_END, () => {
                 AudioBroadcast.playEffect("btn_press");
@@ -28,6 +34,7 @@ export default class LeaderboardCtrl extends cc.Component {
 
     private async loadLeaderboard() {
         try {
+            FirebaseManager.ensureInitialized();
             const snapshot = await FirebaseManager.db
                 .collection('users')
                 .get();
@@ -49,7 +56,7 @@ export default class LeaderboardCtrl extends cc.Component {
             list.sort((a, b) => b.total - a.total);
             const top5 = list.slice(0, 5);
 
-            if (this.loadingNode) this.loadingNode.active = false;
+            this.setTitle("LeaderBoard");
 
             // 填入 UI
             top5.forEach((entry, i) => {
@@ -68,7 +75,53 @@ export default class LeaderboardCtrl extends cc.Component {
 
         } catch(e) {
             console.log("載入排行榜失敗:", e);
-            if (this.loadingNode) this.loadingNode.active = false;
+            this.setTitle("Load Failed");
         }
+    }
+
+    private setTitle(text: string) {
+        if (!this.loadingNode) return;
+
+        this.loadingNode.active = true;
+        const label = this.loadingNode.getComponentInChildren(cc.Label);
+        if (label) {
+            label.string = text;
+            label.node.setPosition(0, 220);
+            label.node.setContentSize(420, 55);
+            label.fontSize = 40;
+            label.lineHeight = 48;
+            label.overflow = cc.Label.Overflow.SHRINK;
+        }
+    }
+
+    private layoutEntries() {
+        const rowStartY = 115;
+        const rowGap = 62;
+
+        this.entryNodes.forEach((node, index) => {
+            if (!node) return;
+
+            node.setPosition(0, rowStartY - index * rowGap);
+            this.layoutColumn(node, "RankLabel", -190, 100);
+            this.layoutColumn(node, "NameLabel", 0, 250);
+            this.layoutColumn(node, "ScoreLabel", 190, 120);
+        });
+    }
+
+    private layoutColumn(parent: cc.Node, name: string, x: number, width: number) {
+        const node = cc.find(name, parent);
+        if (!node) return;
+
+        node.setPosition(x, 0);
+        node.setContentSize(width, 44);
+
+        const label = node.getComponent(cc.Label);
+        if (!label) return;
+
+        label.fontSize = 28;
+        label.lineHeight = 34;
+        label.overflow = cc.Label.Overflow.SHRINK;
+        label.horizontalAlign = cc.Label.HorizontalAlign.CENTER;
+        label.verticalAlign = cc.Label.VerticalAlign.CENTER;
     }
 }

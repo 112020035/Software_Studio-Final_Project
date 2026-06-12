@@ -16,17 +16,20 @@ export default class LevelResultCtrl extends cc.Component {
     partFrames: cc.SpriteFrame[] = [];
 
     private readonly QUALITY_NAMES = ["GOOD", "EXCELLENT", "PERFECT"];
+    private savePromise: Promise<void> = null;
 
     start() {
         AudioBroadcast.playBgm("inventory_bgm");
         const levelIndex = GameData.currentLevel - 1;
         const quality    = GameData.partQualities[levelIndex] ?? 0;
         GameData.updateHighQuality();
+        GameData.updateItemCount();
 
         // 更新前先記住舊的最高分
         const prevBest  = GameData.bestScores[levelIndex];
         const score     = GameData.updateBestScore();
         const isNewRecord = score > prevBest;
+        this.savePromise = GameData.saveToFirestore();
 
         if (this.timeLabel)    this.timeLabel.string    = `${GameData.levelTime}`;
         if (this.coinsLabel)   this.coinsLabel.string   = `${GameData.coins}`;
@@ -61,8 +64,11 @@ export default class LevelResultCtrl extends cc.Component {
         node.getComponent(cc.Button).clickEvents.push(eh);
     }
 
-    onContinue() {
+    async onContinue() {
         AudioBroadcast.playEffect("btn_press");
+        if (this.savePromise) {
+            await this.savePromise;
+        }
         cc.director.loadScene("Explore");
     }
 }
