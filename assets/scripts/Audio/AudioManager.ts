@@ -5,6 +5,7 @@
  */
 import { AudioEvent } from "./AudioEvent";
 type AudioName =
+    | "bad_bgm"
     | "btn_press"
     | "collision"
     | "craft_flying"
@@ -12,6 +13,7 @@ type AudioName =
     | "damage"
     | "enter_level"
     | "failure_bgm"
+    | "goodending_bgm"
     | "gun_shoot"
     | "inventory_bgm"
     | "jump"
@@ -19,6 +21,7 @@ type AudioName =
     | "level3_bgm"
     | "main_menu_bgm"
     | "main_scene_bgm"
+    | "normal_bgm"
     | "recharge"
     | "run_on_ground"
     | "run_on_water"
@@ -33,6 +36,9 @@ type AudioName =
 const BGM_NAMES: AudioName[] = [
     "main_menu_bgm",
     "main_scene_bgm",
+    "bad_bgm",
+    "normal_bgm",
+    "goodending_bgm",
     "story_line_bgm",
     "level2_bgm",
     "level3_bgm",
@@ -148,6 +154,9 @@ export default class AudioManager extends cc.Component {
     public level3_bgm(): void { this.playBgm("level3_bgm"); }
     public inventory_bgm(): void { this.playBgm("inventory_bgm"); }
     public failure_bgm(): void { this.playBgm("failure_bgm"); }
+    public goodending_bgm(): void { this.playBgm("goodending_bgm"); }
+    public bad_bgm(): void { this.playBgm("bad_bgm"); }
+    public normal_bgm(): void { this.playBgm("normal_bgm"); }
 
     // ─── 核心播放邏輯 ────────────────────────────────────
 

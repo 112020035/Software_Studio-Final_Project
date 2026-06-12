@@ -50,7 +50,6 @@ export default class OutroCtrl extends cc.Component {
     }
 
     start() {
-        AudioBroadcast.playBgm("story_line_bgm");
 
         // 計算結局類型
         GameData.calcEnding();
@@ -58,8 +57,15 @@ export default class OutroCtrl extends cc.Component {
 
         // 依結局種類選中間那張
         let middleSlide: cc.Node = this.slideNormal;
-        if (endingType === "bad")  middleSlide = this.slideBad;
-        if (endingType === "good") middleSlide = this.slideGood;
+        if (endingType === "bad")  {
+            AudioBroadcast.playBgm("bad_bgm");
+            middleSlide = this.slideBad;
+        } else if (endingType === "good") {
+            AudioBroadcast.playBgm("goodending_bgm");
+            middleSlide = this.slideGood;
+        } else {
+            AudioBroadcast.playBgm("normal_bgm");
+        }
 
         // 組成播放清單
         this.slides = [this.slide1, middleSlide];
