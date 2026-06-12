@@ -1,58 +1,67 @@
 /**
  * EndingCtrl.ts
- * 場景：Ending（Slide 16～18）
+ * 場景：Ending
  * 掛載節點：Canvas
  *
- * 場景節點結構：
- * Canvas
- * ├── BadEnding     (節點，顯示壞結局畫面，active 預設 false)
- * ├── NormalEnding  (節點，顯示普通結局畫面，active 預設 false)
- * ├── GoodEnding    (節點，顯示好結局畫面，active 預設 false)
- * └── BackToMenuButton (cc.Button) 返回主選單
+ * 使用方式：
+ *   將此腳本掛在 Canvas 上，
+ *   於 Inspector 將 BackToMenuButton 拖入對應欄位。
  *
- * 結局判斷（GameData.calcEnding() 已在 OutroCtrl 執行）：
- * - bad    → 道具 < 5
- * - normal → 道具 5～9
- * - good   → 道具 ≥ 10
+ * 場景啟動後 Canvas 下所有 Label 淡入，
+ * 點擊按鈕返回 MainMenu。
  */
-import GameData from "./GameData";
-
 const { ccclass, property } = cc._decorator;
 
 @ccclass
 export default class EndingCtrl extends cc.Component {
 
     @property(cc.Node)
-    badEnding: cc.Node = null;
+    backToMenuButton: cc.Node = null;
 
-    @property(cc.Node)
-    normalEnding: cc.Node = null;
-
-    @property(cc.Node)
-    goodEnding: cc.Node = null;
+    /** Label 淡入持續秒數 */
+    @property
+    fadeDuration: number = 2.0;
 
     start() {
-        // 根據結局類型顯示對應畫面
-        if (this.badEnding)    this.badEnding.active    = (GameData.endingType === "bad");
-        if (this.normalEnding) this.normalEnding.active = (GameData.endingType === "normal");
-        if (this.goodEnding)   this.goodEnding.active   = (GameData.endingType === "good");
+        // Canvas 下所有 Label 淡入
+        this.fadeInLabels(this.node);
 
-        cc.log(`結局類型：${GameData.endingType}，道具數量：${GameData.itemCount}`);
-
-        this.bindButton("Canvas/BackToMenuButton", "onBackToMenu");
+        if (this.backToMenuButton) {
+            this.backToMenuButton.on(cc.Node.EventType.TOUCH_END, this.onBackToMenu, this);
+        } else {
+            cc.warn("EndingCtrl: backToMenuButton 未指定，請檢查 Inspector");
+        }
     }
 
-    private bindButton(path: string, handler: string) {
-        const node = cc.find(path);
-        if (!node) { cc.warn(`EndingCtrl: 找不到 ${path}`); return; }
-        const eh = new cc.Component.EventHandler();
-        eh.target = this.node;
-        eh.component = "EndingCtrl";
-        eh.handler = handler;
-        node.getComponent(cc.Button).clickEvents.push(eh);
+    onDestroy() {
+        if (this.backToMenuButton) {
+            this.backToMenuButton.off(cc.Node.EventType.TOUCH_END, this.onBackToMenu, this);
+        }
     }
 
-    onBackToMenu() {
+    private onBackToMenu() {
         cc.director.loadScene("MainMenu");
+    }
+
+    private fadeInLabels(root: cc.Node) {
+        const labels = this.collectLabels(root);
+        if (labels.length === 0) return;
+
+        labels.forEach(label => {
+            const originalOpacity = label.opacity > 0 ? label.opacity : 255;
+            label.opacity = 0;
+            label.runAction(cc.fadeTo(this.fadeDuration, originalOpacity));
+        });
+    }
+
+    private collectLabels(node: cc.Node): cc.Node[] {
+        const result: cc.Node[] = [];
+        if (node.getComponent(cc.Label)) {
+            result.push(node);
+        }
+        node.children.forEach(child => {
+            result.push(...this.collectLabels(child));
+        });
+        return result;
     }
 }

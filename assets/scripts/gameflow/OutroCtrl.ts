@@ -6,6 +6,7 @@
  * 使用方式：
  *   將此腳本掛在 Canvas 上，
  *   再於 Inspector 將各 Slide 節點拖入對應欄位。
+ *   編輯器中各 Slide 節點的 active 狀態不影響執行結果。
  *
  * 播放順序：Slide1 → Slide{Bad|Normal|Good} → SlideGameEnd
  * 每張顯示時所有子 Label 會淡入，點擊螢幕換下一張。
@@ -37,6 +38,17 @@ export default class OutroCtrl extends cc.Component {
     private slides: cc.Node[] = [];
     private currentIndex: number = 0;
 
+    onLoad() {
+        // 在第一幀渲染前就把所有 Slide 隱藏，避免閃爍
+        const allSlides = [
+            this.slide1,
+            this.slideBad,
+            this.slideNormal,
+            this.slideGood
+        ];
+        allSlides.forEach(s => { if (s) s.active = false; });
+    }
+
     start() {
         AudioBroadcast.playBgm("story_line_bgm");
 
@@ -46,22 +58,16 @@ export default class OutroCtrl extends cc.Component {
 
         // 依結局種類選中間那張
         let middleSlide: cc.Node = this.slideNormal;
-        if (endingType === "bad")    middleSlide = this.slideBad;
-        if (endingType === "good")   middleSlide = this.slideGood;
-        if (endingType === "normal") middleSlide = this.slideNormal;
+        if (endingType === "bad")  middleSlide = this.slideBad;
+        if (endingType === "good") middleSlide = this.slideGood;
 
         // 組成播放清單
         this.slides = [this.slide1, middleSlide];
 
         // 檢查是否有空的欄位
-        for (let i = 0; i < this.slides.length; i++) {
-            if (!this.slides[i]) {
-                cc.warn(`OutroCtrl: 第 ${i + 1} 個 Slide 節點未指定，請檢查 Inspector`);
-            }
-        }
-
-        // 全部先隱藏
-        this.slides.forEach(s => { if (s) s.active = false; });
+        this.slides.forEach((s, i) => {
+            if (!s) cc.warn(`OutroCtrl: 第 ${i + 1} 個 Slide 節點未指定，請檢查 Inspector`);
+        });
 
         this.node.on(cc.Node.EventType.TOUCH_END, this.onTouchEnd, this);
 
