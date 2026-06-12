@@ -24,6 +24,9 @@ export default class IntroCtrl extends cc.Component {
     /** Label 淡入持續秒數 */
     @property(cc.Float)
     fadeDuration: number = 2.0;
+    @property(cc.Node)
+    skipButton: cc.Node = null!;
+    
 
     private slides: cc.Node[] = [];
     private currentIndex: number = 0;
@@ -44,11 +47,17 @@ export default class IntroCtrl extends cc.Component {
             }
         }
 
-        if (this.slides.length === 0) {
+        if (this.skipButton) {
+            this.skipButton.on(cc.Node.EventType.TOUCH_END, () => {
+                AudioBroadcast.playEffect("btn_press");
+                cc.director.loadScene("Explore");
+            }, this);
+        } else if (this.slides.length === 0) {
             cc.warn("IntroCtrl: 沒有任何 Slide 節點，直接跳過");
             cc.director.loadScene("Tutorial");
             return;
         }
+        
 
         // 監聽點擊事件（掛在 Canvas 上，全螢幕有效）
         this.node.on(cc.Node.EventType.TOUCH_END, this.onTouchEnd, this);
