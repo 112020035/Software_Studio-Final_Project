@@ -54,7 +54,7 @@ export default class FirebaseManager extends cc.Component {
 
 
     /** 儲存 GameData 關鍵數據到 Firestore */
-    static async saveGameData(userId: string): Promise<void> {
+    /*static async saveGameData(userId: string): Promise<void> {
         const auth = FirebaseManager.ensureInitialized();
         const db = FirebaseManager._db;
 
@@ -71,10 +71,10 @@ export default class FirebaseManager extends cc.Component {
         } catch (e) {
             console.error("GameData 儲存失敗:", e);
         }
-    }
+    }*/
 
     /** 從 Firestore 讀取並還原 GameData */
-    static async loadGameData(userId: string): Promise<void> {
+    /*static async loadGameData(userId: string): Promise<void> {
         const db = FirebaseManager._db;
 
         try {
@@ -91,5 +91,5 @@ export default class FirebaseManager extends cc.Component {
         } catch (e) {
             console.error("GameData 讀取失敗:", e);
         }
-    }
+    }*/
 }

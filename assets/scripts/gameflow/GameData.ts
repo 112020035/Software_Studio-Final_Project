@@ -74,4 +74,47 @@ export default class GameData {
             GameData.endingType = "bad";
         }
     }
+    // 儲存資料到 Firestore
+    public static async saveToFirestore() {
+        try {
+            // @ts-ignore
+            const user = firebase.auth().currentUser;
+            if (!user) {
+                cc.warn("尚未登入，無法存資料");
+                return;
+            }
+            await FirebaseManager.db
+                .collection('users')
+                .doc(user.uid)
+                .update({
+                    highQualities: GameData.highQualities,
+                    itemCount:     GameData.itemCount,
+                    bestScores:    GameData.bestScores,
+                });
+            console.log("資料已存入 Firestore");
+        } catch(e) {
+            console.log("存入 Firestore 失敗:", e);
+        }
+    }
+    // 從 Firestore 載入資料 
+    public static async loadFromFirestore() {
+        try {
+            // @ts-ignore
+            const user = firebase.auth().currentUser;
+            if (!user) return;
+            const doc = await FirebaseManager.db
+                .collection('users')
+                .doc(user.uid)
+                .get();
+            if (doc.exists) {
+                const data = doc.data();
+                GameData.highQualities = data.highQualities ?? [-1, -1, -1];
+                GameData.itemCount     = data.itemCount     ?? 0;
+                GameData.bestScores    = data.bestScores    ?? [0, 0, 0];
+                console.log("從 Firestore 載入資料成功");
+            }
+        } catch(e) {
+            console.log("載入 Firestore 失敗:", e);
+        }
+    }
 }

@@ -250,15 +250,16 @@ export default class Level3Ctrl extends cc.Component {
         GameData.updateBestScore();
         GameData.updateHighQuality();
         GameData.updateItemCount();
+        GameData.saveToFirestore();
 
         const user = FirebaseManager.auth.currentUser;
-        if (user) {
+        /*if (user) {
             FirebaseManager.saveGameData(user.uid).then(() => {
                 console.log("儲存完成");
             }).catch((e) => {
                 console.error("儲存失敗", e);
             });
-        }
+        }*/
     }
 
     private findComponentRecursive(node: cc.Node, componentName: string): any {

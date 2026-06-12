@@ -24,13 +24,13 @@ export default class InventoryCtrl extends cc.Component {
 
         // @ts-ignore
         const user = firebase.auth().currentUser;
-        if (user) {
+        /*if (user) {
             FirebaseManager.loadGameData(user.uid).then(() => {
                 this.refreshUI(user);
             });
         } else {
             this.refreshUI(null);
-        }
+        }*/
     }
 
     private refreshUI(user: any) {

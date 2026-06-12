@@ -69,11 +69,12 @@ export default class ExploreCtrl extends cc.Component {
 
     onLoad() {
         const user = FirebaseManager.auth.currentUser;
-        if (user) {
+        /*if (user) {
             FirebaseManager.loadGameData(user.uid).then(() => {
                 console.log("資料載入完成");
             });
-        }
+        }*/
+        GameData.loadFromFirestore();
 
         const physics    = cc.director.getPhysicsManager();
         physics.enabled  = true;

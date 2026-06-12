@@ -162,7 +162,7 @@ export default class AudioManager extends cc.Component {
         this.loadClip(name, (clip) => {
             this.stopBgm();
             this.bgmId = cc.audioEngine.play(clip, true, this.bgmVolume);
-            cc.log(`[AudioManager] 播放 BGM：${name}，bgmId=${this.bgmId}，volume=${this.bgmVolume}`);
+            // cc.log(`[AudioManager] 播放 BGM：${name}，bgmId=${this.bgmId}，volume=${this.bgmVolume}`);
             this.currentBgm = name;
         });
     }
