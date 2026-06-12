@@ -52,7 +52,11 @@ export default class GameData {
     }
 
     public static updateItemCount(): number {
-        GameData.itemCount = GameData.highQualities[0] + GameData.highQualities[1] + GameData.highQualities[2] + 3;
+        GameData.itemCount = GameData.highQualities.reduce(
+            (total, quality) => total + Math.max(quality + 1, 0),
+            0
+        );
+        return GameData.itemCount;
     }
 
     public static reset() {
@@ -63,7 +67,7 @@ export default class GameData {
     }
 
     public static calcEnding() {
-        if (GameData.highQualities[0] < 0 || GameData.highQualities[1] < 0 || GameData.highQualities[2] < 0){
+        if (GameData.highQualities[1] < 0 || GameData.highQualities[2] < 0){
             GameData.endingType = "bad";
         }
         else if (GameData.itemCount >= 5) {
@@ -77,8 +81,7 @@ export default class GameData {
     // 儲存資料到 Firestore
     public static async saveToFirestore() {
         try {
-            // @ts-ignore
-            const user = firebase.auth().currentUser;
+            const user = FirebaseManager.auth.currentUser;
             if (!user) {
                 cc.warn("尚未登入，無法存資料");
                 return;
@@ -86,11 +89,11 @@ export default class GameData {
             await FirebaseManager.db
                 .collection('users')
                 .doc(user.uid)
-                .update({
+                .set({
                     highQualities: GameData.highQualities,
                     itemCount:     GameData.itemCount,
                     bestScores:    GameData.bestScores,
-                });
+                }, { merge: true });
             console.log("資料已存入 Firestore");
         } catch(e) {
             console.log("存入 Firestore 失敗:", e);
@@ -99,8 +102,7 @@ export default class GameData {
     // 從 Firestore 載入資料 
     public static async loadFromFirestore() {
         try {
-            // @ts-ignore
-            const user = firebase.auth().currentUser;
+            const user = FirebaseManager.auth.currentUser;
             if (!user) return;
             const doc = await FirebaseManager.db
                 .collection('users')

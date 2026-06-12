@@ -9,6 +9,9 @@ export default class InventoryCtrl extends cc.Component {
     @property(cc.Label)
     itemCountLabel: cc.Label = null;
 
+    @property(cc.Label)
+    totalScoreLabel: cc.Label = null;
+
     @property(cc.Sprite) part1: cc.Sprite = null;
     @property(cc.Sprite) part2: cc.Sprite = null;
     @property(cc.Sprite) part3: cc.Sprite = null;
@@ -29,16 +32,26 @@ export default class InventoryCtrl extends cc.Component {
         AudioBroadcast.playBgm("inventory_bgm");
         this.bindButton("Canvas/BackButton", "onBack");
 
-        // @ts-ignore
-        const user = firebase.auth().currentUser;
-        GameData.loadFromFirestore();
-        this.refreshUI(user)
+        const user = FirebaseManager.auth.currentUser;
+        this.refreshUI(user);
+        this.loadLatestInventory(user);
+    }
+
+    private async loadLatestInventory(user: any) {
+        if (!user) return;
+
+        await GameData.loadFromFirestore();
+        this.refreshUI(user);
     }
 
     private refreshUI(user: any) {
         // 顯示道具數量
         if (this.itemCountLabel) {
             this.itemCountLabel.string = `飛船等級：${GameData.itemCount}`;
+        }
+
+        if (this.totalScoreLabel) {
+            this.totalScoreLabel.string = `玩家分數：${GameData.bestScores[1] + GameData.bestScores[2]}`;
         }
 
         // 顯示玩家名稱

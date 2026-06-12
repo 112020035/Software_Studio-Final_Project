@@ -18,7 +18,10 @@ export default class FirebaseManager extends cc.Component {
     private static _app: any = null;
     private static _auth: any = null;
     private static _db: any = null;
-    static get db(): any { return FirebaseManager._db; }
+    static get db(): any {
+        FirebaseManager.ensureInitialized();
+        return FirebaseManager._db;
+    }
 
     static get auth(): any {
         return FirebaseManager.ensureInitialized();

@@ -441,8 +441,7 @@ export default class ExploreCtrl extends cc.Component {
         AudioBroadcast.playEffect("btn_press");
         switch (level) {
             case 1: 
-                GameData.enterlevel(level);
-                cc.director.loadScene("Tutorial1");
+                cc.director.loadScene("LeaderBoard");
                 break;
             case 2: 
                 GameData.enterlevel(level);
