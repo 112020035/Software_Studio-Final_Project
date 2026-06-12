@@ -292,11 +292,15 @@
     "useViewportEdgeBounds": true,
     "leftEdgeUsesTargetParent": true,
     "leftEdgeX": 0,
+    "useRightViewportEdgeBound": false,
+    "rightEdgeUsesTargetParent": true,
+    "rightEdgeX": 1920,
     "debugBounds": false,
     "minX": -99999,
     "maxX": 99999,
     "minY": -99999,
     "maxY": 99999,
+    "maxShakeStrength": 20,
     "_id": "084aOnCaVHcqWECBpridmB"
   },
   {

@@ -28,6 +28,12 @@ export default class PlayerCollider extends cc.Component {
     }
 
     onBeginContact(contact: cc.PhysicsContact, self: cc.PhysicsCollider, other: cc.PhysicsCollider) {
+        const entryIndex = this.getEntryIndex(other.node);
+        if (entryIndex >= 0) {
+            if (this.onEnterLevel) this.onEnterLevel(entryIndex);
+            return;
+        }
+
         const group = other.node.group;
 
         if (group === "Spaceship") {
@@ -40,13 +46,15 @@ export default class PlayerCollider extends cc.Component {
             return;
         }
 
-        if (group === "Entry") {
-            const index = this.getEntryIndex(other.node);
-            if (index >= 0 && this.onEnterLevel) this.onEnterLevel(index);
-        }
     }
 
     onEndContact(contact: cc.PhysicsContact, self: cc.PhysicsCollider, other: cc.PhysicsCollider) {
+        const entryIndex = this.getEntryIndex(other.node);
+        if (entryIndex >= 0) {
+            if (this.onExitLevel) this.onExitLevel(entryIndex);
+            return;
+        }
+
         const group = other.node.group;
 
         if (group === "Spaceship") {
@@ -54,20 +62,15 @@ export default class PlayerCollider extends cc.Component {
             return;
         }
 
-        if (group === "Spaceship") {
+        if (group === "Home") {
             if (this.onExitHome) this.onExitHome();
             return;
-        }
-
-        if (group === "Entry") {
-            const index = this.getEntryIndex(other.node);
-            if (index >= 0 && this.onExitLevel) this.onExitLevel(index);
         }
     }
 
     // entry 節點名稱為 entry1 / entry2 / entry3，取出數字轉成 0-based index
     private getEntryIndex(node: cc.Node): number {
-        const match = node.name.match(/(\d+)$/);
+        const match = node.name.match(/^entry(\d+)$/i);
         if (!match) return -1;
         return parseInt(match[1]) - 1;
     }
