@@ -28,6 +28,13 @@ export default class PlayerCollider extends cc.Component {
     }
 
     onBeginContact(contact: cc.PhysicsContact, self: cc.PhysicsCollider, other: cc.PhysicsCollider) {
+        
+        const entryIndex = this.getEntryIndex(other.node);
+        if (entryIndex >= 0) {
+            if (this.onEnterLevel) this.onEnterLevel(entryIndex);
+            return;
+        }
+
         const group = other.node.group;
 
         if (group === "Spaceship") {
