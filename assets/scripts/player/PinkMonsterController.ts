@@ -1394,9 +1394,6 @@ cc.Class({
             case cc.macro.KEY.c:
                 this.climbPressed = true;
                 break;
-            case cc.macro.KEY.h:
-                this.hurtPressed = true;
-                break;
             case cc.macro.KEY.k:
                 if (!this.attackPressed) {
                     this.attackPressed = true;
@@ -1437,9 +1434,6 @@ cc.Class({
                 break;
             case cc.macro.KEY.c:
                 this.climbPressed = false;
-                break;
-            case cc.macro.KEY.h:
-                this.hurtPressed = false;
                 break;
         }
     }

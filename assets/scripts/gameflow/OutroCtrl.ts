@@ -37,6 +37,7 @@ export default class OutroCtrl extends cc.Component {
 
     private slides: cc.Node[] = [];
     private currentIndex: number = 0;
+    private isReady: boolean = false;
 
     onLoad() {
         // 在第一幀渲染前就把所有 Slide 隱藏，避免閃爍
@@ -49,11 +50,16 @@ export default class OutroCtrl extends cc.Component {
         allSlides.forEach(s => { if (s) s.active = false; });
     }
 
-    start() {
+    async start() {
+        await GameData.loadFromFirestore();
 
         // 計算結局類型
         GameData.calcEnding();
         const endingType: string = GameData.endingType;
+        cc.log(
+            `[OutroCtrl] ending=${endingType}, ` +
+            `highQualities=${JSON.stringify(GameData.highQualities)}`
+        );
 
         // 依結局種類選中間那張
         let middleSlide: cc.Node = this.slideNormal;
@@ -77,6 +83,7 @@ export default class OutroCtrl extends cc.Component {
 
         this.node.on(cc.Node.EventType.TOUCH_END, this.onTouchEnd, this);
 
+        this.isReady = true;
         this.showSlide(0);
     }
 
@@ -85,6 +92,8 @@ export default class OutroCtrl extends cc.Component {
     }
 
     private onTouchEnd() {
+        if (!this.isReady) return;
+
         const next = this.currentIndex + 1;
         if (next < this.slides.length) {
             this.showSlide(next);

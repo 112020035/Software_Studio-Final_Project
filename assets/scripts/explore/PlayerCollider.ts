@@ -34,14 +34,12 @@ export default class PlayerCollider extends cc.Component {
             return;
         }
 
-        const group = other.node.group;
-
-        if (group === "Spaceship") {
+        if (this.isInteractionTarget(other.node, "Spaceship")) {
             if (this.onEnterSpaceship) this.onEnterSpaceship();
             return;
         }
 
-        if (group === "Home") {
+        if (this.isInteractionTarget(other.node, "Home")) {
             if (this.onEnterHome) this.onEnterHome();
             return;
         }
@@ -55,14 +53,12 @@ export default class PlayerCollider extends cc.Component {
             return;
         }
 
-        const group = other.node.group;
-
-        if (group === "Spaceship") {
+        if (this.isInteractionTarget(other.node, "Spaceship")) {
             if (this.onExitSpaceship) this.onExitSpaceship();
             return;
         }
 
-        if (group === "Home") {
+        if (this.isInteractionTarget(other.node, "Home")) {
             if (this.onExitHome) this.onExitHome();
             return;
         }
@@ -73,5 +69,22 @@ export default class PlayerCollider extends cc.Component {
         const match = node.name.match(/^entry(\d+)$/i);
         if (!match) return -1;
         return parseInt(match[1]) - 1;
+    }
+
+    private isInteractionTarget(node: cc.Node, target: string): boolean {
+        const normalizedTarget = target.toLowerCase();
+
+        while (node) {
+            if (
+                node.group.toLowerCase() === normalizedTarget ||
+                node.name.toLowerCase() === normalizedTarget
+            ) {
+                return true;
+            }
+
+            node = node.parent;
+        }
+
+        return false;
     }
 }

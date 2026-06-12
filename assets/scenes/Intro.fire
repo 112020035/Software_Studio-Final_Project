@@ -446,7 +446,7 @@
     "_contentSize": {
       "__type__": "cc.Size",
       "width": 450,
-      "height": 97.8
+      "height": 67.8
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -1141,8 +1141,8 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_string": "未知的旅程，或許不該獨自前行。\n輸入夥伴的通訊 ID，\n邀請朋友一起展開宇宙探險。",
-    "_N$string": "未知的旅程，或許不該獨自前行。\n輸入夥伴的通訊 ID，\n邀請朋友一起展開宇宙探險。",
+    "_string": "未知的旅程，或許不該獨自前行。\n邀請朋友一起展開宇宙探險。",
+    "_N$string": "未知的旅程，或許不該獨自前行。\n邀請朋友一起展開宇宙探險。",
     "_fontSize": 20,
     "_lineHeight": 30,
     "_enableWrapText": true,

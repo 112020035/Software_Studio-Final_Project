@@ -67,12 +67,25 @@ export default class GameData {
     }
 
     public static calcEnding() {
-        if (GameData.highQualities[1] < 0 || GameData.highQualities[2] < 0){
+        // Entry 1 currently opens LeaderBoard, so endings use the playable levels 2 and 3.
+        const endingQualities = [
+            GameData.highQualities[1],
+            GameData.highQualities[2]
+        ];
+
+        if (endingQualities.some(quality => quality < 0)) {
             GameData.endingType = "bad";
+            return;
         }
-        else if (GameData.itemCount >= 5) {
+
+        const endingScore = endingQualities.reduce(
+            (total, quality) => total + quality,
+            0
+        );
+
+        if (endingScore >= 4) {
             GameData.endingType = "good";
-        } else if (GameData.itemCount >= 3) {
+        } else if (endingScore >= 2) {
             GameData.endingType = "normal";
         } else {
             GameData.endingType = "bad";
