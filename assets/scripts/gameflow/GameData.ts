@@ -3,6 +3,9 @@
  * 全局靜態資料，跨場景共享
  * 掛載方式：不需掛載節點，直接 import 使用
  */
+
+import FirebaseManager from "../firebase/FirebaseManager";
+
 export default class GameData {
     public static levelTime:   number = 0;
     public static coins:       number = 0;
@@ -48,6 +51,10 @@ export default class GameData {
         }
     }
 
+    public static updateItemCount(): number {
+        GameData.itemCount = GameData.highQualities[0] + GameData.highQualities[1] + GameData.highQualities[2];
+    }
+
     public static reset() {
         GameData.itemCount = 0;
         GameData.currentLevel = 1;
@@ -56,7 +63,6 @@ export default class GameData {
     }
 
     public static calcEnding() {
-        GameData.itemCount = GameData.highQualities[0] + GameData.highQualities[1] + GameData.highQualities[2];
         if (GameData.highQualities[0] < 0 || GameData.highQualities[1] < 0 || GameData.highQualities[2] < 0){
             GameData.endingType = "bad";
         }

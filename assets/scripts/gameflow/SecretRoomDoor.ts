@@ -5,6 +5,7 @@
  * Opens for a matching key, manages secret-room visibility, or loads a target scene.
  */
 var PlayerDarknessOverlay = require('../effects/PlayerDarknessOverlay');
+import FirebaseManager from "../firebase/FirebaseManager";
 
 cc.Class({
     extends: cc.Component,
@@ -198,7 +199,18 @@ cc.Class({
                     var quality      = hud.remainingTime >= 90 ? 2 : hud.remainingTime >= 40 ? 1 : 0;
                     GameData.partQualities[levelIndex] = quality;
 
-                    cc.log('[SecretRoomDoor] 存檔 → time:', GameData.levelTime, 'coins:', GameData.coins, 'quality:', quality);
+                    GameData.updateBestScore();
+                    GameData.updateHighQuality();
+                    GameData.updateItemCount();
+
+                    const user = FirebaseManager.auth.currentUser;
+                    if (user) {
+                        FirebaseManager.saveGameData(user.uid).then(() => {
+                            console.log("儲存完成");
+                        }).catch((e) => {
+                            console.error("儲存失敗", e);
+                        });
+                    }
                 }
             }
 

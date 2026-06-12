@@ -3,6 +3,7 @@
  */
 import GameData from "../gameflow/GameData";
 import { AudioBroadcast } from "../Audio/AudioEvent";
+import FirebaseManager from "../firebase/FirebaseManager";
 
 const { ccclass, property } = cc._decorator;
 
@@ -67,6 +68,13 @@ export default class ExploreCtrl extends cc.Component {
     }
 
     onLoad() {
+        const user = FirebaseManager.auth.currentUser;
+        if (user) {
+            FirebaseManager.loadGameData(user.uid).then(() => {
+                console.log("資料載入完成");
+            });
+        }
+
         const physics    = cc.director.getPhysicsManager();
         physics.enabled  = true;
         physics.gravity  = cc.v2(0, -980);

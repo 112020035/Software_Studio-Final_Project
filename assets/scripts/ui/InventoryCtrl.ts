@@ -1,4 +1,5 @@
 import GameData from "../gameflow/GameData";
+import FirebaseManager from "../firebase/FirebaseManager";
 import { AudioBroadcast } from "../Audio/AudioEvent";
 const { ccclass, property } = cc._decorator;
 
@@ -19,26 +20,38 @@ export default class InventoryCtrl extends cc.Component {
 
     start() {
         AudioBroadcast.playBgm("inventory_bgm");
-        if (this.itemCountLabel) {
-            this.itemCountLabel.string = `已收集道具：${GameData.itemCount}`;
-        }
+        this.bindButton("Canvas/BackButton", "onBack");
+
         // @ts-ignore
         const user = firebase.auth().currentUser;
-        
-        if (user && this.playerNameLabel) {
-            this.playerNameLabel.string = user.displayName || user.email;
+        if (user) {
+            FirebaseManager.loadGameData(user.uid).then(() => {
+                this.refreshUI(user);
+            });
+        } else {
+            this.refreshUI(null);
+        }
+    }
+
+    private refreshUI(user: any) {
+        // 顯示道具數量
+        if (this.itemCountLabel) {
+            this.itemCountLabel.string = `飛船等級：${GameData.itemCount}`;
         }
 
-        const parts = [this.part1, this.part2, this.part3];
+        // 顯示玩家名稱
+        if (user && this.playerNameLabel) {
+            this.playerNameLabel.string = `${user.displayName || user.email.split('@')[0]}的飛船`;
+        }
 
+        // 顯示三個道具圖
+        const parts = [this.part1, this.part2, this.part3];
         for (let i = 0; i < 3; i++) {
             const quality = GameData.highQualities[i];
             const sprite  = parts[i];
-
             if (!sprite) continue;
 
             if (quality === -1) {
-                // 尚未獲得，隱藏節點
                 sprite.node.active = false;
             } else {
                 sprite.node.active = true;
@@ -51,8 +64,6 @@ export default class InventoryCtrl extends cc.Component {
                 }
             }
         }
-
-        this.bindButton("Canvas/BackButton", "onBack");
     }
 
     private bindButton(path: string, handler: string) {

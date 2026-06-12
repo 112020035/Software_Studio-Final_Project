@@ -1,4 +1,5 @@
 import GameData from "./GameData";
+import FirebaseManager from "../firebase/FirebaseManager";
 
 const { ccclass, property } = cc._decorator;
 
@@ -245,6 +246,19 @@ export default class Level3Ctrl extends cc.Component {
         GameData.partQualities[levelIndex] = quality;
 
         cc.director.loadScene("LevelResult");
+
+        GameData.updateBestScore();
+        GameData.updateHighQuality();
+        GameData.updateItemCount();
+
+        const user = FirebaseManager.auth.currentUser;
+        if (user) {
+            FirebaseManager.saveGameData(user.uid).then(() => {
+                console.log("儲存完成");
+            }).catch((e) => {
+                console.error("儲存失敗", e);
+            });
+        }
     }
 
     private findComponentRecursive(node: cc.Node, componentName: string): any {

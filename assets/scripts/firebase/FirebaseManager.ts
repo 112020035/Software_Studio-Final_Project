@@ -51,4 +51,45 @@ export default class FirebaseManager extends cc.Component {
             console.log("FirebaseManager 初始化失敗:", e);
         }
     }
+
+
+    /** 儲存 GameData 關鍵數據到 Firestore */
+    static async saveGameData(userId: string): Promise<void> {
+        const auth = FirebaseManager.ensureInitialized();
+        const db = FirebaseManager._db;
+
+        const data = {
+            highQualities: GameData.highQualities,
+            itemCount: GameData.itemCount,
+            bestScores: GameData.bestScores,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        try {
+            await db.collection("users").doc(userId).set(data, { merge: true });
+            console.log("GameData 儲存成功");
+        } catch (e) {
+            console.error("GameData 儲存失敗:", e);
+        }
+    }
+
+    /** 從 Firestore 讀取並還原 GameData */
+    static async loadGameData(userId: string): Promise<void> {
+        const db = FirebaseManager._db;
+
+        try {
+            const doc = await db.collection("users").doc(userId).get();
+            if (doc.exists) {
+                const data = doc.data();
+                if (data.highQualities) GameData.highQualities = data.highQualities;
+                if (data.bestScores)    GameData.bestScores    = data.bestScores;
+                if (data.itemCount !== undefined) GameData.itemCount = data.itemCount;
+                console.log("GameData 讀取成功", data);
+            } else {
+                console.log("尚無儲存資料，使用預設值");
+            }
+        } catch (e) {
+            console.error("GameData 讀取失敗:", e);
+        }
+    }
 }
